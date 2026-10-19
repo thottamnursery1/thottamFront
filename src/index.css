@@ -1,0 +1,480 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply text-ink antialiased;
+    font-family: 'Manrope', system-ui, sans-serif;
+    background-color: #F4F6F3;
+  }
+
+  /* Dashboard pages get a clean neutral background */
+  .dashboard-body {
+    background-color: #F0F2EF;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: Fraunces, Georgia, serif;
+    font-weight: 460;
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    outline: 2px solid #287A55;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS — CSS custom properties
+────────────────────────────────────────────────────────────── */
+:root {
+  --sidebar-w: 240px;
+  --sidebar-w-collapsed: 68px;
+  --sidebar-transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  --header-h: 60px;
+  --radius-card: 14px;
+  --radius-input: 10px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 20px rgba(0,0,0,0.11);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COMPONENT LAYER
+────────────────────────────────────────────────────────────── */
+@layer components {
+
+  /* ── Buttons ──────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-primary-700 text-white text-sm font-semibold
+           rounded-xl hover:bg-primary-600 active:bg-primary-800
+           transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-sm hover:shadow min-h-[40px];
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           border border-primary-300 text-primary-700 text-sm font-semibold
+           rounded-xl hover:bg-primary-50 active:bg-primary-100
+           transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed
+           min-h-[40px];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2
+           text-gray-600 text-sm font-medium
+           rounded-lg hover:bg-gray-100 active:bg-gray-200
+           transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-red-600 text-white text-sm font-semibold
+           rounded-xl hover:bg-red-700 active:bg-red-800
+           transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed
+           min-h-[40px];
+  }
+
+  .btn-terracotta {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-terracotta-500 text-white text-sm font-medium
+           rounded-xl hover:bg-terracotta-600
+           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-icon {
+    @apply inline-flex items-center justify-center w-9 h-9
+           rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-800
+           transition-colors duration-150;
+  }
+
+  /* ── Inputs ───────────────────────────────────────────────── */
+  .input {
+    @apply w-full px-3.5 py-2.5 border border-gray-200
+           rounded-[10px] text-sm text-ink placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400
+           transition-all duration-150 bg-white min-h-[40px];
+    box-shadow: var(--shadow-inner-sm, inset 0 1px 2px rgba(0,0,0,0.04));
+  }
+
+  .input-error {
+    @apply border-red-400 focus:ring-red-200 focus:border-red-500;
+  }
+
+  .label {
+    @apply block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5;
+  }
+
+  .field {
+    @apply space-y-1.5;
+  }
+
+  /* ── Cards ────────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-[14px] overflow-hidden;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    @apply transition-shadow duration-200 hover:shadow-card-hover;
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.80);
+    box-shadow: 0 4px 24px rgba(23, 63, 53, 0.07);
+  }
+
+  /* ── Stat card variants ───────────────────────────────────── */
+  .stat-card {
+    @apply card p-5 flex flex-col gap-3;
+  }
+
+  /* ── Dashboard section card ───────────────────────────────── */
+  .panel {
+    @apply card p-0 overflow-hidden;
+  }
+
+  .panel-header {
+    @apply flex items-center justify-between px-5 py-4 border-b border-gray-100;
+  }
+
+  .panel-title {
+    @apply text-sm font-semibold text-gray-900;
+  }
+
+  /* ── Badges ───────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-green  { @apply badge bg-primary-100 text-primary-800; }
+  .badge-red    { @apply badge bg-red-100 text-red-700; }
+  .badge-orange { @apply badge bg-amber-100 text-amber-700; }
+  .badge-blue   { @apply badge bg-blue-100 text-blue-700; }
+  .badge-purple { @apply badge bg-purple-100 text-purple-700; }
+  .badge-gray   { @apply badge bg-gray-100 text-gray-600; }
+
+  /* ── Tables ───────────────────────────────────────────────── */
+  .data-table {
+    @apply w-full text-sm border-collapse;
+  }
+
+  .data-table thead tr {
+    @apply bg-gray-50 border-b border-gray-100;
+  }
+
+  .data-table thead th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap;
+  }
+
+  .data-table tbody tr {
+    @apply border-b border-gray-50 hover:bg-gray-50/70 transition-colors duration-100;
+  }
+
+  .data-table tbody td {
+    @apply px-4 py-3 text-gray-700;
+  }
+
+  /* ── Page layout ──────────────────────────────────────────── */
+  .page-header {
+    @apply flex flex-wrap items-center justify-between gap-4 mb-6;
+  }
+
+  .page-title {
+    @apply text-xl font-display font-semibold text-gray-900;
+  }
+
+  .page-subtitle {
+    @apply text-sm text-gray-400 mt-0.5;
+  }
+
+  /* ── Section title in forms ───────────────────────────────── */
+  .section-label {
+    @apply text-xs font-bold text-gray-400 uppercase tracking-widest;
+  }
+
+  /* ── Sidebar ──────────────────────────────────────────────── */
+  .sidebar-root {
+    background: linear-gradient(180deg, #0F2820 0%, #0C1F18 100%);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-nav-item {
+    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
+           font-medium transition-all duration-150 cursor-pointer select-none;
+    /* 'group' cannot be used inside @apply — applied via plain CSS class name in JSX */
+    color: rgba(255,255,255,0.62);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .sidebar-nav-item:hover {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.92);
+  }
+
+  .sidebar-nav-item.active {
+    background: rgba(62,148,108,0.22);
+    color: #ffffff;
+    box-shadow: inset 2px 0 0 #3E946C;
+  }
+
+  .sidebar-nav-item .nav-icon {
+    @apply flex-shrink-0 w-[18px] h-[18px];
+    min-width: 18px;
+  }
+
+  .sidebar-nav-item .nav-label {
+    @apply overflow-hidden whitespace-nowrap;
+    transition: opacity 200ms, max-width 200ms;
+  }
+
+  .sidebar-section-label {
+    @apply px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.14em];
+    color: rgba(255,255,255,0.28);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Tooltip for collapsed sidebar */
+  .sidebar-tooltip {
+    @apply pointer-events-none absolute left-full ml-2 z-[9999]
+           px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap
+           opacity-0 transition-opacity duration-150;
+    background: rgba(15, 24, 20, 0.95);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  /* Show tooltip when the parent .sidebar-nav-item (which carries `group`) is hovered */
+  .sidebar-nav-item:hover .sidebar-tooltip {
+    opacity: 1;
+  }
+
+  /* ── Filter bar ───────────────────────────────────────────── */
+  .filter-bar {
+    @apply flex flex-wrap items-center gap-2 p-4 bg-gray-50/70 border-b border-gray-100;
+  }
+
+  .filter-select {
+    @apply input py-2 w-auto text-xs cursor-pointer;
+    min-width: 140px;
+  }
+
+  /* ── Empty state ──────────────────────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 px-6 text-center;
+  }
+
+  /* ── Container ────────────────────────────────────────────── */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ── Section title (storefront) ───────────────────────────── */
+  .section-title {
+    @apply text-3xl font-display font-semibold text-gray-900;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILITY LAYER
+────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(62,148,108,0.3) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(62,148,108,0.3);
+  }
+
+  .scrollbar-gloss {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.22) transparent;
+  }
+  .scrollbar-gloss::-webkit-scrollbar { width: 4px; }
+  .scrollbar-gloss::-webkit-scrollbar-track { background: transparent; margin: 8px 0; }
+  .scrollbar-gloss::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+  }
+  .scrollbar-gloss::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.38);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #173F35 0%, #3E946C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .min-w-0-safe { min-width: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SKELETON / LOADING
+────────────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #E8EDEA 25%, #F4F6F3 50%, #E8EDEA 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 10px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GLASSMORPHISM (storefront)
+────────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STOREFRONT PAGE BACKGROUND
+────────────────────────────────────────────────────────────── */
+.storefront-bg {
+  background-color: #F8F6EF;
+  background-image:
+    radial-gradient(ellipse 70% 45% at 0% -10%, rgba(205,232,213,0.75), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 100% 0%, rgba(227,235,221,0.90), transparent 50%);
+  background-attachment: fixed;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PRODUCT CARD
+────────────────────────────────────────────────────────────── */
+.product-card {
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.product-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SWIPER
+────────────────────────────────────────────────────────────── */
+.swiper-pagination-bullet-active {
+  background: #173F35 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CARTON BOX DIALOG ANIMATIONS
+────────────────────────────────────────────────────────────── */
+@keyframes carton-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes carton-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes carton-sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50%       { transform: rotate(6deg); }
+}
+
+.carton-rise  { animation: carton-rise  0.38s ease-out; }
+.carton-fade  { animation: carton-fade  0.28s ease-out; }
+.carton-leaf  { animation: carton-sway  3.6s ease-in-out infinite; }
+.carton-leaf-delay { animation-delay: 0.6s; }
+
+/* ─────────────────────────────────────────────────────────────
+   ANIMATIONS
+────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes float    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.animate-fade-in    { animation: fadeIn   0.3s ease-out forwards; }
+.animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+.animate-float      { animation: float    3s ease-in-out infinite; }
+
+/* shadow-card utility (referenced in JSX via className) */
+.shadow-card       { box-shadow: var(--shadow-card); }
+.shadow-card-hover { box-shadow: var(--shadow-card-hover); }
+
+/* ─────────────────────────────────────────────────────────────
+   SIDEBAR DASHBOARD LAYOUT
+   Uses CSS grid so the sidebar never overlaps main content.
+────────────────────────────────────────────────────────────── */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: #F0F2EF;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;           /* critical — prevents flex child from overflowing */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+@media (max-width: 1023px) {
+  .dashboard-content {
+    padding: 20px 16px;
+  }
+}
