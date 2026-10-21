@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { orderAPI } from '../services/api';
+import { orderAPI, communityAPI } from '../services/api';
 import { formatPrice, formatDate, getOrderStatusColor, orderStatusLabel, getPaymentStatusColor } from '../utils/helpers';
 import { PageSpinner } from '../components/Spinner';
 import {
@@ -92,6 +92,20 @@ export default function OrderDetailPage() {
                 className="text-sm text-red-500 hover:text-red-600 font-medium border border-red-200 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60"
               >
                 {cancelling ? 'Cancelling…' : 'Cancel Order'}
+              </button>
+            )}
+            {order.paymentStatus === 'paid' && (
+              <button
+                type="button"
+                className="text-sm text-primary-700 border border-line px-3 py-1 rounded-lg"
+                onClick={async () => {
+                  const details = window.prompt('Describe the damaged or incorrect plant.');
+                  if (!details) return;
+                  await communityAPI.report({ orderId: order._id, reason: 'damaged', details });
+                  toast.success('Report sent. Refunds are reviewed by Thottam.');
+                }}
+              >
+                Report a plant
               </button>
             )}
           </div>
@@ -217,7 +231,11 @@ export default function OrderDetailPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 text-sm">{item.name}</p>
                 {item.variantName && <p className="text-xs text-gray-400 mt-0.5">{item.variantName}</p>}
-                {item.nurseryName && <p className="text-xs text-gray-400">From {item.nurseryName}</p>}
+                {item.nurseryName && (
+                  <p className="text-xs text-gray-400">
+                    Fulfilled by {item.nurseryName} · {item.sellerKind === 'community' ? 'Community Seller' : 'Nursery Seller'}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-0.5">
                   {item.quantity} × {formatPrice(item.price)}
                 </p>
@@ -240,6 +258,11 @@ export default function OrderDetailPage() {
               {order.pricing?.shippingCharge === 0 ? 'FREE' : formatPrice(order.pricing?.shippingCharge)}
             </span>
           </div>
+          {order.pricing?.packagingFee > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Carton box</span><span>{formatPrice(order.pricing.packagingFee)}</span>
+            </div>
+          )}
           {order.pricing?.couponDiscount > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Discount {order.pricing.couponCode && `(${order.pricing.couponCode})`}</span>

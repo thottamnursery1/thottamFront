@@ -112,6 +112,22 @@ export default function AccountPage() {
           </div>
           <ChevronRightIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
         </Link>
+        <Link to="/account/plants"
+          className="flex items-center gap-3 bg-white rounded-2xl shadow-card p-4 hover:shadow-md transition-shadow">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 text-sm">My Plant Activities</p>
+            <p className="text-xs text-gray-500">Adoptions, exchanges, and plants you have listed</p>
+          </div>
+          <ChevronRightIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        </Link>
+        <Link to="/community/apply"
+          className="flex items-center gap-3 bg-white rounded-2xl shadow-card p-4 hover:shadow-md transition-shadow">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 text-sm">Sell your plants</p>
+            <p className="text-xs text-gray-500">Apply as a community seller with this account</p>
+          </div>
+          <ChevronRightIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        </Link>
       </div>
 
       {/* Tabs */}

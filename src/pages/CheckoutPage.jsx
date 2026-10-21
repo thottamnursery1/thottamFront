@@ -261,7 +261,11 @@ export default function CheckoutPage() {
                     onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=60'; }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-gray-800 line-clamp-1">{item.name}</p>
-                    {item.nurseryName && <p className="text-xs text-muted">{item.nurseryName}</p>}
+                    {item.nurseryName && (
+                      <p className="text-xs text-muted">
+                        {item.sellerKind === 'community' ? 'Community Seller' : 'Nursery Seller'} · {item.nurseryName}
+                      </p>
+                    )}
                     {item.variantName && <p className="text-xs text-gray-500">{item.variantName}</p>}
                     <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
                   </div>
@@ -280,6 +284,12 @@ export default function CheckoutPage() {
                   {summary.shippingCharge === 0 ? 'FREE' : formatPrice(summary.shippingCharge)}
                 </span>
               </div>
+              {summary.shippingCharge > 0 && (
+                <p className="text-xs text-muted -mt-1">One delivery fee for the whole order. Distance does not change it.</p>
+              )}
+              {summary.communityDelivery > 0 && (
+                <p className="text-xs text-muted">Includes {formatPrice(summary.communityDelivery)} community seller delivery. Commission is calculated on the plant price, not this fee.</p>
+              )}
               {summary.couponDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span><span>− {formatPrice(summary.couponDiscount)}</span>
@@ -304,6 +314,7 @@ export default function CheckoutPage() {
       <CartonBoxDialog
         open={cartonOpen}
         busy={loading}
+        orderTotal={summary?.totalAmount || 0}
         onClose={() => { if (!loading) setCartonOpen(false); }}
         onConfirm={handlePay}
       />

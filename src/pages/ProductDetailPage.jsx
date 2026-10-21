@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { productAPI, reviewAPI, nurseryAPI, enquiryAPI } from '../services/api';
+import { productAPI, reviewAPI, nurseryAPI, enquiryAPI, communityAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -52,7 +52,7 @@ export default function ProductDetailPage() {
   if (loading) return <PageSpinner />;
   if (!data) return <div className="text-center py-20 text-gray-500">Product not found.</div>;
 
-  const { product, related, fromNursery } = data;
+  const { product, related, fromNursery, fromSeller } = data;
   const inWishlist = isInWishlist(product._id);
   const effectivePrice = selectedVariant?.price || product.price;
   const effectiveStock = selectedVariant?.stock ?? product.stock;
@@ -138,9 +138,37 @@ export default function ProductDetailPage() {
               className="text-sm text-primary-600 font-medium hover:underline">{product.category.name}</Link>
           )}
           <h1 className="text-3xl font-display text-gray-900 mt-2 mb-3">{product.name}</h1>
+          {product.communitySeller?.displayName && (
+            <div className="mb-4 space-y-2">
+              <span className="badge bg-primary-700 text-white">Community Seller</span>
+              <p>
+                <Link to={`/community/sellers/${product.communitySeller.slug || product.communitySeller._id}`} className="text-sm text-primary-700 font-medium">
+                  Fulfilled by {product.communitySeller.displayName}
+                  {product.communitySeller.pickupAddress?.city ? ` · ${product.communitySeller.pickupAddress.city}` : ''}
+                </Link>
+              </p>
+              {product.communitySeller.ratings?.count > 0 && (
+                <StarRating rating={product.communitySeller.ratings.average} size="sm" showCount count={product.communitySeller.ratings.count} />
+              )}
+              <p className="text-sm text-muted">
+                {(product.fulfillmentOptions || []).join(', ').replaceAll('_', ' ') || 'Local pickup and delivery'}
+                {product.dispatchPrepHours ? ` · ready in about ${product.dispatchPrepHours} hours` : ''}
+                {typeof product.localDeliveryFee === 'number' ? ` · local delivery ${formatPrice(product.localDeliveryFee)}` : ''}
+              </p>
+              {product.plantInfo?.potSize && <p className="text-sm text-muted">Pot {product.plantInfo.potSize}{product.plantInfo.height ? ` · size ${product.plantInfo.height}` : ''}</p>}
+              <button type="button" className="text-sm text-primary-700" onClick={async () => {
+                if (!isAuthenticated) { navigate('/login'); return; }
+                const details = window.prompt('What looks wrong with this listing?');
+                if (!details) return;
+                await communityAPI.report({ productId: product._id, reason: 'suspicious', details });
+                toast.success('Report sent to the marketplace team.');
+              }}>Report listing</button>
+            </div>
+          )}
           {product.nursery?.name && (
             <div className="mb-4">
-              <Link to={`/nurseries/${product.nursery.slug || product.nursery._id}`} className="text-sm text-primary-700 font-medium">
+              <span className="badge bg-white border border-line text-primary-800">Nursery Seller</span>
+              <Link to={`/nurseries/${product.nursery.slug || product.nursery._id}`} className="block text-sm text-primary-700 font-medium mt-2">
                 Sold by {product.nursery.name}{product.nursery.address?.city ? ` · ${product.nursery.address.city}` : ''}
               </Link>
               {product.deliveryAvailability && <p className="text-sm text-muted mt-1">{product.deliveryAvailability}</p>}
@@ -422,6 +450,14 @@ export default function ProductDetailPage() {
           <h2 className="section-title mb-6">More from this nursery</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
             {fromNursery.map((p) => <ProductCard key={p._id} product={p} />)}
+          </div>
+        </section>
+      )}
+      {fromSeller?.length > 0 && (
+        <section className="mt-12">
+          <h2 className="section-title mb-6">More from this community seller</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {fromSeller.map((p) => <ProductCard key={p._id} product={p} />)}
           </div>
         </section>
       )}

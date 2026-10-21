@@ -43,6 +43,8 @@ export default function ProductsPage() {
     deliveryPin: getParam('deliveryPin'),
     beginner: getParam('beginner'),
     plantType: getParam('plantType'),
+    sellerType: getParam('sellerType'),
+    deliveryMethod: getParam('deliveryMethod'),
     sort: getParam('sort', 'newest'),
     page: Number(getParam('page', '1')),
     isFeatured: getParam('isFeatured'),
@@ -80,6 +82,7 @@ export default function ProductsPage() {
     filters.category, filters.minPrice, filters.maxPrice,
     filters.sunlight, filters.careLevel, filters.indoorOutdoor,
     filters.nursery, filters.availability, filters.deliveryPin, filters.beginner, filters.plantType,
+    filters.sellerType, filters.deliveryMethod,
   ].filter(Boolean).length;
 
   const FilterPanel = () => (
@@ -159,6 +162,28 @@ export default function ProductsPage() {
       </div>
 
       <div>
+        <h4 className="font-semibold text-gray-800 mb-3 text-sm">Seller</h4>
+        <div className="flex flex-wrap gap-2">
+          {[['nursery', 'Nursery'], ['community', 'Community'], ['home_gardener', 'Home gardener'], ['plant_enthusiast', 'Enthusiast'], ['small_grower', 'Small grower']].map(([value, label]) => (
+            <button key={value} type="button" onClick={() => setFilter('sellerType', filters.sellerType === value ? '' : value)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${filters.sellerType === value ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="font-semibold text-gray-800 mb-3 text-sm">Delivery method</h4>
+        <div className="flex flex-wrap gap-2">
+          {[['pickup', 'Pickup'], ['local_delivery', 'Local'], ['courier', 'Courier']].map(([value, label]) => (
+            <button key={value} type="button" onClick={() => setFilter('deliveryMethod', filters.deliveryMethod === value ? '' : value)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${filters.deliveryMethod === value ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 text-gray-600'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
         <h4 className="font-semibold text-gray-800 mb-3 text-sm">Availability</h4>
         <div className="flex flex-wrap gap-2">
           {[['in', 'In stock'], ['out', 'Unavailable']].map(([value, label]) => (
@@ -190,25 +215,24 @@ export default function ProductsPage() {
   return (
     <div className="container-custom py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-display font-semibold text-gray-900">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-3xl leading-tight text-gray-900 sm:text-4xl">
             {filters.search ? `Results for "${filters.search}"` : filters.category
               ? categories.find((c) => c.slug === filters.category)?.name || 'Products'
               : 'All Products'}
           </h1>
-          {!loading && <p className="text-sm text-gray-500 mt-1">{pagination.total} products found</p>}
+          {!loading && <p className="mt-1 text-sm text-gray-500">{pagination.total} products found</p>}
         </div>
-        <div className="flex items-center gap-3">
-          {/* Sort */}
-          <select value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}
-            className="input py-2 text-sm w-auto">
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+          <label htmlFor="product-sort" className="sr-only">Sort products</label>
+          <select id="product-sort" value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}
+            className="input min-w-0 flex-1 py-2 text-sm sm:w-52 sm:flex-none">
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          {/* Mobile filter toggle */}
-          <button onClick={() => setFiltersOpen(true)}
-            className="lg:hidden flex items-center gap-2 btn-outline py-2 text-sm">
-            <AdjustmentsHorizontalIcon className="w-4 h-4" />
+          <button type="button" onClick={() => setFiltersOpen(true)}
+            className="btn-outline shrink-0 py-2 text-sm lg:hidden">
+            <AdjustmentsHorizontalIcon className="h-4 w-4" />
             Filters {activeFilterCount > 0 && <span className="badge bg-primary-500 text-white">{activeFilterCount}</span>}
           </button>
         </div>
@@ -232,7 +256,7 @@ export default function ProductsPage() {
         {filtersOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />
-            <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl overflow-y-auto p-5">
+            <div className="absolute right-0 top-0 h-full w-full max-w-sm overflow-y-auto bg-white p-5 shadow-2xl">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-semibold text-gray-900">Filters</h3>
                 <button onClick={() => setFiltersOpen(false)}><XMarkIcon className="w-5 h-5 text-gray-500" /></button>
@@ -255,7 +279,7 @@ export default function ProductsPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
                 {products.map((p) => <ProductCard key={p._id} product={p} />)}
               </div>
               <div className="mt-10">

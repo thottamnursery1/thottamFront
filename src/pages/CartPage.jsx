@@ -61,7 +61,10 @@ export default function CartPage() {
             return groups;
           }, {})).map(([nurseryName, items]) => (
             <section key={nurseryName} className="space-y-3">
-              <h2 className="text-sm uppercase tracking-[0.14em] text-muted">Ships from {nurseryName}</h2>
+              <h2 className="text-sm uppercase tracking-[0.14em] text-muted">
+                Fulfilled by {nurseryName}
+                <span className="ml-2 normal-case tracking-normal">{items[0]?.sellerKind === 'community' ? '· Community Seller' : '· Nursery Seller'}</span>
+              </h2>
               {items.map((item) => (
             <div key={item._id} className="bg-white rounded-2xl shadow-card p-4 flex gap-4">
               <Link to={`/products/${item.product?.slug || item.product?._id || item.product}`}>
@@ -148,6 +151,9 @@ export default function CartPage() {
                   {summary.shippingCharge === 0 ? 'FREE' : formatPrice(summary.shippingCharge)}
                 </span>
               </div>
+              {summary.shippingCharge > 0 && (
+                <p className="text-xs text-muted -mt-1">Fixed fee for every order. Distance does not change it.</p>
+              )}
               {summary.couponDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Coupon Discount</span>

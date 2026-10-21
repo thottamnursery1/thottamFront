@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { formatPrice } from '../utils/helpers';
 
 const choices = [
   {
@@ -12,7 +13,7 @@ const choices = [
     value: true,
     icon: '📦',
     title: 'Yes, I need a carton box',
-    detail: 'Keep my plants safely packed.',
+    detail: 'Adds ₹31 to the total.',
     recommended: false,
   },
 ];
@@ -36,7 +37,7 @@ function LeafArt() {
   );
 }
 
-export default function CartonBoxDialog({ open, busy, onClose, onConfirm }) {
+export default function CartonBoxDialog({ open, busy, orderTotal = 0, onClose, onConfirm }) {
   const titleId = useId();
   const descriptionId = useId();
   const dialogRef = useRef(null);
@@ -142,7 +143,7 @@ export default function CartonBoxDialog({ open, busy, onClose, onConfirm }) {
             disabled={choice === null || busy}
             onClick={() => onConfirm(choice)}
           >
-            {busy ? 'Opening payment...' : 'Continue to payment'}
+            {busy ? 'Opening payment...' : choice === true ? `Continue to payment · ${formatPrice(orderTotal + 31)}` : 'Continue to payment'}
           </button>
         </div>
       </div>

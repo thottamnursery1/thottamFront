@@ -5,7 +5,7 @@ import {
   ChartBarIcon, CubeIcon, ShoppingBagIcon, UsersIcon,
   TagIcon, ArchiveBoxIcon, Squares2X2Icon,
   BuildingStorefrontIcon, Cog6ToothIcon, BanknotesIcon,
-  ShieldCheckIcon,
+  ShieldCheckIcon, UserGroupIcon, SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 const navItems = [
@@ -17,7 +17,9 @@ const navItems = [
   { to: '/admin/coupons',     label: 'Coupons',     icon: TagIcon,                           section: 'Commerce' },
   { to: '/admin/customers',   label: 'Customers',   icon: UsersIcon,                         section: 'People' },
   { to: '/admin/accounts',    label: 'Accounts',    icon: ShieldCheckIcon,                   section: 'People' },
-  { to: '/admin/sellers',     label: 'Sellers',     icon: BuildingStorefrontIcon,             section: 'People' },
+  { to: '/admin/sellers',     label: 'Nurseries',   icon: BuildingStorefrontIcon,             section: 'People' },
+  { to: '/admin/community',   label: 'Community',   icon: UserGroupIcon,                     section: 'People' },
+  { to: '/admin/plants',      label: 'Plant exchange', icon: SparklesIcon,                   section: 'People' },
   { to: '/admin/settlements', label: 'Settlements', icon: BanknotesIcon,                     section: 'Finance' },
   { to: '/admin/settings',    label: 'Settings',    icon: Cog6ToothIcon,                     section: 'System' },
 ];

@@ -63,7 +63,10 @@ export default function AdminSettings() {
       await adminAPI.updateSettings({
         ...form,
         commissionPercent:    Number(form.commissionPercent),
-        deliveryCharge:       Number(form.deliveryCharge),
+        communityCommissionPercent: Number(form.communityCommissionPercent || 10),
+        communityLocalDeliveryFee: Number(form.communityLocalDeliveryFee || 0),
+        communityReturnWindowHours: Number(form.communityReturnWindowHours || 48),
+        deliveryCharge: 40,
         freeDeliveryThreshold: Number(form.freeDeliveryThreshold),
         taxPercent:           Number(form.taxPercent),
         serviceablePins:      String(form.serviceablePins || '').split(/[\s,]+/).filter(Boolean),
@@ -88,11 +91,17 @@ export default function AdminSettings() {
       {/* ── Commerce ──────────────────────────────────────── */}
       <SectionCard icon={CurrencyRupeeIcon} title="Commerce" subtitle="Fees and delivery pricing">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Field label="Commission %" hint="Recorded for manual settlement">
+          <Field label="Nursery commission %" hint="Recorded for manual settlement">
             <input type="number" step="0.01" min="0" max="100" className="input" {...bind('commissionPercent')} />
           </Field>
-          <Field label="Delivery (₹)">
-            <input type="number" step="0.01" min="0" className="input" {...bind('deliveryCharge')} />
+          <Field label="Community commission %" hint="Percent of community plant price">
+            <input type="number" step="0.01" min="0" max="40" className="input" {...bind('communityCommissionPercent')} />
+          </Field>
+          <Field label="Community delivery (₹)" hint="Default local delivery fee">
+            <input type="number" step="0.01" min="0" className="input" {...bind('communityLocalDeliveryFee')} />
+          </Field>
+          <Field label="Delivery (₹)" hint="₹40 once per order. Distance does not change this fee.">
+            <input type="number" className="input" value={40} readOnly />
           </Field>
           <Field label="Free Delivery Above (₹)">
             <input type="number" step="0.01" min="0" className="input" {...bind('freeDeliveryThreshold')} />

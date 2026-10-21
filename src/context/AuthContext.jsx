@@ -67,6 +67,12 @@ export const AuthProvider = ({ children }) => {
     setNursery(nextNursery);
   }, []);
 
+  const updateNursery = useCallback((nextNursery) => {
+    setNursery(nextNursery || null);
+    if (nextNursery) localStorage.setItem('nursery', JSON.stringify(nextNursery));
+    else localStorage.removeItem('nursery');
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -88,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, nursery, loading, isAuthenticated, isAdmin, isSeller, isShopAdmin, isProductAdmin, login, register, logout, updateUser, acceptSellerSession }}>
+    <AuthContext.Provider value={{ user, nursery, loading, isAuthenticated, isAdmin, isSeller, isShopAdmin, isProductAdmin, login, register, logout, updateUser, updateNursery, acceptSellerSession }}>
       {children}
     </AuthContext.Provider>
   );

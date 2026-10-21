@@ -8,7 +8,7 @@ export default function FloatingCart() {
   if (pathname.startsWith('/admin') || pathname.startsWith('/seller') || pathname.startsWith('/checkout')) return null;
 
   return (
-    <div className="fixed bottom-5 right-4 z-40 flex flex-col gap-2">
+    <div className="fixed bottom-5 right-4 z-40 hidden flex-col gap-2 sm:flex">
       <Link to="/wishlist" className="glass-panel w-12 h-12 rounded-full flex items-center justify-center text-primary-700" aria-label="Wishlist">
         <HeartIcon className="w-5 h-5" />
       </Link>

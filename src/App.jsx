@@ -48,6 +48,7 @@ import SellerOrderDetail from './pages/seller/SellerOrderDetail';
 import SellerEnquiries from './pages/seller/SellerEnquiries';
 import SellerProfile from './pages/seller/SellerProfile';
 import SellerStaff from './pages/seller/SellerStaff';
+import SellerInventory from './pages/seller/SellerInventory';
 import ProductRoute from './components/ProductRoute';
 import ProductAdminLayout from './layouts/ProductAdminLayout';
 import ProductAdminHome from './pages/product-admin/ProductAdminHome';
@@ -58,6 +59,22 @@ import AdminSellerDetail from './pages/admin/AdminSellerDetail';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminSettlements from './pages/admin/AdminSettlements';
 import AdminAccounts from './pages/admin/AdminAccounts';
+import CommunityApplyPage from './pages/CommunityApplyPage';
+import CommunitySellerPage from './pages/CommunitySellerPage';
+import CommunityRoute from './components/CommunityRoute';
+import CommunityLayout from './layouts/CommunityLayout';
+import CommunityHome from './pages/community/CommunityHome';
+import CommunityProducts from './pages/community/CommunityProducts';
+import CommunityProductForm from './pages/community/CommunityProductForm';
+import CommunityOrders from './pages/community/CommunityOrders';
+import CommunityEarnings from './pages/community/CommunityEarnings';
+import CommunityProfile from './pages/community/CommunityProfile';
+import AdminCommunity from './pages/admin/AdminCommunity';
+import PlantExchangePage from './pages/plants/PlantExchangePage';
+import PlantDetailPage from './pages/plants/PlantDetailPage';
+import PlantFormPage from './pages/plants/PlantFormPage';
+import PlantActivitiesPage from './pages/plants/PlantActivitiesPage';
+import AdminPlants from './pages/admin/AdminPlants';
 
 export default function App() {
   return (
@@ -83,12 +100,19 @@ export default function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/:id" element={<OrderDetailPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/plants/new" element={<PlantFormPage />} />
+            <Route path="/plants/:id/edit" element={<PlantFormPage />} />
+            <Route path="/account/plants" element={<PlantActivitiesPage />} />
           </Route>
           <Route path="/nurseries" element={<NurseriesPage />} />
           <Route path="/nurseries/:slug" element={<NurseryDetailPage />} />
           <Route path="/plant-care" element={<PlantCarePage />} />
           <Route path="/policies/:topic" element={<PolicyPage />} />
           <Route path="/sell" element={<SellerRegisterPage />} />
+          <Route path="/community/apply" element={<CommunityApplyPage />} />
+          <Route path="/community/sellers/:id" element={<CommunitySellerPage />} />
+          <Route path="/plants" element={<PlantExchangePage />} />
+          <Route path="/plants/:id" element={<PlantDetailPage />} />
           
           {/* Seller Pending Route with MainLayout */}
           <Route element={<SellerRoute allowPending />}>
@@ -99,6 +123,7 @@ export default function App() {
           <Route element={<SellerLayout />}>
             <Route path="/seller" element={<SellerDashboard />} />
             <Route path="/seller/products" element={<SellerProducts />} />
+            <Route path="/seller/inventory" element={<SellerInventory />} />
             <Route path="/seller/products/new" element={<SellerProductForm />} />
             <Route path="/seller/products/:id/edit" element={<SellerProductForm />} />
             <Route path="/seller/orders" element={<SellerOrders />} />
@@ -106,6 +131,20 @@ export default function App() {
             <Route path="/seller/enquiries" element={<SellerEnquiries />} />
             <Route path="/seller/profile" element={<SellerProfile />} />
             <Route path="/seller/staff" element={<SellerStaff />} />
+          </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<CommunityRoute />}>
+            <Route element={<CommunityLayout />}>
+              <Route path="/community" element={<CommunityHome />} />
+              <Route path="/community/products" element={<CommunityProducts />} />
+              <Route path="/community/products/new" element={<CommunityProductForm />} />
+              <Route path="/community/products/:id/edit" element={<CommunityProductForm />} />
+              <Route path="/community/orders" element={<CommunityOrders />} />
+              <Route path="/community/earnings" element={<CommunityEarnings />} />
+              <Route path="/community/profile" element={<CommunityProfile />} />
+            </Route>
           </Route>
         </Route>
 
@@ -136,6 +175,8 @@ export default function App() {
             <Route path="/admin/sellers/:id" element={<AdminSellerDetail />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/settlements" element={<AdminSettlements />} />
+            <Route path="/admin/community" element={<AdminCommunity />} />
+            <Route path="/admin/plants" element={<AdminPlants />} />
           </Route>
         </Route>
 

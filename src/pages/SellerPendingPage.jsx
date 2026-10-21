@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { nurseryAPI } from '../services/api';
@@ -11,19 +11,42 @@ const LABELS = {
   suspended: 'SUSPENDED',
 };
 
+const applicationForm = (shop, account) => ({
+  description: shop?.description || '',
+  phone: shop?.phone || account?.phone || '',
+  logo: shop?.logo || '',
+  line1: shop?.address?.line1 || '',
+  city: shop?.address?.city || '',
+  state: shop?.address?.state || '',
+  postalCode: shop?.address?.postalCode || '',
+});
+
 export default function SellerPendingPage() {
   const navigate = useNavigate();
-  const { nursery, user, isShopAdmin, logout } = useAuth();
-  const status = nursery?.status || 'pending';
-  const [form, setForm] = useState({
-    description: nursery?.description || '',
-    phone: nursery?.phone || '',
-    logo: nursery?.logo || '',
-    line1: nursery?.address?.line1 || '',
-    city: nursery?.address?.city || '',
-    state: nursery?.address?.state || '',
-    postalCode: nursery?.address?.postalCode || '',
-  });
+  const { nursery, user, isShopAdmin, logout, updateNursery } = useAuth();
+  const [shop, setShop] = useState(nursery);
+  const status = shop?.status || nursery?.status || 'pending';
+  const [form, setForm] = useState(() => applicationForm(nursery, user));
+
+  useEffect(() => {
+    const role = user?.role;
+    const shouldLoad = Boolean(nursery?._id) || role === 'shop_admin' || role === 'seller';
+    if (!user || !shouldLoad) return undefined;
+    let active = true;
+    nurseryAPI.myApplication()
+      .then((res) => {
+        const next = res.data?.nursery;
+        if (!active || !next) return;
+        setShop(next);
+        updateNursery(next);
+        setForm(applicationForm(next, user));
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [user, nursery?._id, updateNursery]);
+
+  const shown = shop || nursery;
+  const address = [shown?.address?.line1, shown?.address?.city, shown?.address?.state, shown?.address?.postalCode].filter(Boolean).join(', ');
 
   const resubmit = async (event) => {
     event.preventDefault();
@@ -49,34 +72,34 @@ export default function SellerPendingPage() {
           <span className="badge-green">{LABELS[status] || status}</span>
         )}
         <p className="text-xs uppercase tracking-[0.18em] text-muted mt-4">Shop application</p>
-        <h1 className="text-4xl mt-2">{nursery?.name || user?.name}</h1>
+        <h1 className="text-4xl mt-2">{shown?.name || user?.name}</h1>
         {user?.role === 'product_admin' && !nursery && (
           <p className="mt-4 text-ink/80 leading-relaxed">A shop assignment is required before you can manage products. Ask a super admin or your shop admin to assign you to a shop.</p>
         )}
-        {status === 'pending' && nursery && (
+        {status === 'pending' && shown && (
           <p className="mt-4 text-ink/80 leading-relaxed">Your shop registration request has been submitted successfully. You can access product management after your shop is approved.</p>
         )}
-        {status === 'rejected' && nursery && (
-          <p className="mt-4 text-ink/80 leading-relaxed">{nursery?.rejectionReason || 'This application was not approved.'}{isShopAdmin ? ' You can update the details below and resubmit.' : ''}</p>
+        {status === 'rejected' && shown && (
+          <p className="mt-4 text-ink/80 leading-relaxed">{shown?.rejectionReason || 'This application was not approved.'}{isShopAdmin ? ' You can update the details below and resubmit.' : ''}</p>
         )}
         {status === 'suspended' && (
           <p className="mt-4 text-ink/80 leading-relaxed">This shop is suspended. Product management and publishing are blocked. Existing orders remain available to the platform for review.</p>
         )}
-        {status === 'approved' && nursery && (
+        {status === 'approved' && shown && (
           <Link to={user?.role === 'product_admin' ? '/product-admin' : '/seller'} className="btn-primary mt-6">
             {user?.role === 'product_admin' ? 'Open product admin' : 'Open shop admin'}
           </Link>
         )}
         <dl className="mt-6 grid sm:grid-cols-2 gap-3 text-sm">
-          <div><dt className="text-muted">Owner</dt><dd>{nursery?.ownerName || user?.name}</dd></div>
-          <div><dt className="text-muted">Email</dt><dd>{nursery?.email || user?.email}</dd></div>
-          <div><dt className="text-muted">Phone</dt><dd>{nursery?.phone || '—'}</dd></div>
-          <div><dt className="text-muted">Shop ID</dt><dd>{nursery?.sellerCode || 'Assigned on save'}</dd></div>
-          <div className="sm:col-span-2"><dt className="text-muted">Address</dt><dd>{[nursery?.address?.line1, nursery?.address?.city, nursery?.address?.state, nursery?.address?.postalCode].filter(Boolean).join(', ') || '—'}</dd></div>
+          <div><dt className="text-muted">Owner</dt><dd>{shown?.ownerName || user?.name}</dd></div>
+          <div><dt className="text-muted">Email</dt><dd>{shown?.email || user?.email}</dd></div>
+          <div><dt className="text-muted">Phone</dt><dd>{shown?.phone || user?.phone || '—'}</dd></div>
+          <div><dt className="text-muted">Shop ID</dt><dd>{shown?.sellerCode || 'Assigned on save'}</dd></div>
+          <div className="sm:col-span-2"><dt className="text-muted">Address</dt><dd>{address || '—'}</dd></div>
         </dl>
-        {(nursery?.documents || []).length > 0 && (
+        {(shown?.documents || []).length > 0 && (
           <ul className="mt-4 text-sm space-y-1">
-            {nursery.documents.map((doc) => <li key={doc.url}><a className="text-primary-700 underline" href={doc.url}>{doc.label || 'Document'}</a></li>)}
+            {shown.documents.map((doc) => <li key={doc.url}><a className="text-primary-700 underline" href={doc.url}>{doc.label || 'Document'}</a></li>)}
           </ul>
         )}
         <p className="mt-6 text-sm text-muted">Product management stays disabled until the status is APPROVED. A super admin reviews the shop, then the Product Admin workspace opens for this same shop.</p>

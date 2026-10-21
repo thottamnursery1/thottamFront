@@ -4,12 +4,14 @@ import DashboardLayout from '../components/DashboardLayout';
 import {
   ChartBarIcon, CubeIcon, ShoppingBagIcon, ChatBubbleLeftRightIcon,
   UserGroupIcon, PlusCircleIcon, BuildingStorefrontIcon, ArrowTopRightOnSquareIcon,
+  ArchiveBoxIcon,
 } from '@heroicons/react/24/outline';
 
 const getNavItems = () => [
-  { to: '/seller',          label: 'Overview',        icon: ChartBarIcon,              end: true,  section: 'Dashboard' },
-  { to: '/seller/orders',   label: 'Orders',          icon: ShoppingBagIcon,                       section: 'Store' },
-  { to: '/seller/products', label: 'Products',        icon: CubeIcon,                              section: 'Store' },
+  { to: '/seller',            label: 'Overview',         icon: ChartBarIcon,              end: true,  section: 'Dashboard' },
+  { to: '/seller/orders',     label: 'Orders',           icon: ShoppingBagIcon,                       section: 'Store' },
+  { to: '/seller/products',   label: 'Products',         icon: CubeIcon,                              section: 'Store' },
+  { to: '/seller/inventory',  label: 'Inventory',        icon: ArchiveBoxIcon,                        section: 'Store' },
   { to: '/seller/enquiries',label: 'Enquiries',       icon: ChatBubbleLeftRightIcon,               section: 'Store' },
   { to: '/seller/staff',    label: 'Product Managers',icon: UserGroupIcon,                         section: 'Team' },
   { to: '/product-admin',   label: 'Product Admin',   icon: PlusCircleIcon,                        section: 'Team' },

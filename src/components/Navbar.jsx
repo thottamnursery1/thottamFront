@@ -12,6 +12,7 @@ import { nurseryAPI } from '../services/api';
 const LINKS = [
   { label: 'Home', to: '/' },
   { label: 'Shop', to: '/products' },
+  { label: 'Adopt & exchange', to: '/plants' },
   { label: 'Indoor', to: '/products?category=indoor-plants' },
   { label: 'Outdoor', to: '/products?category=outdoor-plants' },
   { label: 'Flowering', to: '/products?category=flowering-plants' },
@@ -19,6 +20,8 @@ const LINKS = [
   { label: 'Herbs', to: '/products?category=herbs' },
   { label: 'Trees', to: '/products?category=trees' },
   { label: 'Pots', to: '/products?category=pots-planters' },
+  { label: 'Nurseries', to: '/nurseries' },
+  { label: 'Community', to: '/products?sellerType=community' },
   { label: 'Plant Care', to: '/plant-care' },
 ];
 
@@ -96,6 +99,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link to="/products?sellerType=community" className="text-sm font-medium text-ink/80 hover:text-primary-700">Community</Link>
           </nav>
           <form onSubmit={submitSearch} className="hidden md:flex flex-1 max-w-md ml-auto relative">
             <label htmlFor="nav-search" className="sr-only">Search plants</label>
@@ -138,6 +142,16 @@ export default function Navbar() {
                       role="menuitem">
                       <ClipboardDocumentListIcon className="w-4 h-4 text-gray-400" />
                       My Orders
+                    </Link>
+                    <Link to="/account/plants" onClick={() => setAccountMenu(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      role="menuitem">
+                      My Plant Activities
+                    </Link>
+                    <Link to="/community/apply" onClick={() => setAccountMenu(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      role="menuitem">
+                      Sell your plants
                     </Link>
                     <Link to="/account" onClick={() => setAccountMenu(false)}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -186,7 +200,7 @@ export default function Navbar() {
               ))}
               <Link to="/nurseries" className="px-2 py-3 text-base border-b border-line">Nurseries</Link>
               {(!isAuthenticated || user?.role === 'customer') && (
-                <Link to="/sell" className="px-2 py-3 text-base">Sell on Root & Bloom</Link>
+                <Link to="/community/apply" className="px-2 py-3 text-base">Sell your plants</Link>
               )}
             </nav>
             {isAuthenticated && (
