@@ -109,11 +109,11 @@ export default function ProductsPage() {
         <div className="flex items-center gap-2">
           <input type="number" placeholder="Min" value={filters.minPrice}
             onChange={(e) => setFilter('minPrice', e.target.value)}
-            className="input py-2 text-sm w-24" min="0" />
-          <span className="text-gray-400">–</span>
+            className="input min-w-0 flex-1 py-2 text-sm" min="0" />
+          <span className="shrink-0 text-gray-400">–</span>
           <input type="number" placeholder="Max" value={filters.maxPrice}
             onChange={(e) => setFilter('maxPrice', e.target.value)}
-            className="input py-2 text-sm w-24" min="0" />
+            className="input min-w-0 flex-1 py-2 text-sm" min="0" />
         </div>
       </div>
 
@@ -213,36 +213,12 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="container-custom py-8">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-3xl leading-tight text-gray-900 sm:text-4xl">
-            {filters.search ? `Results for "${filters.search}"` : filters.category
-              ? categories.find((c) => c.slug === filters.category)?.name || 'Products'
-              : 'All Products'}
-          </h1>
-          {!loading && <p className="mt-1 text-sm text-gray-500">{pagination.total} products found</p>}
-        </div>
-        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
-          <label htmlFor="product-sort" className="sr-only">Sort products</label>
-          <select id="product-sort" value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}
-            className="input min-w-0 flex-1 py-2 text-sm sm:w-52 sm:flex-none">
-            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <button type="button" onClick={() => setFiltersOpen(true)}
-            className="btn-outline shrink-0 py-2 text-sm lg:hidden">
-            <AdjustmentsHorizontalIcon className="h-4 w-4" />
-            Filters {activeFilterCount > 0 && <span className="badge bg-primary-500 text-white">{activeFilterCount}</span>}
-          </button>
-        </div>
-      </div>
-
-      <div className="flex gap-8">
-        {/* Desktop Filters */}
-        <aside className="hidden lg:block w-56 flex-shrink-0">
-          <div className="bg-white rounded-2xl shadow-card p-5 sticky top-24">
-            <div className="flex items-center justify-between mb-5">
+    <div className="container-custom py-6 sm:py-8">
+      <div className="grid items-start gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+        {/* Desktop Filters — same top edge as the heading */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-[7rem] rounded-2xl bg-white p-5 shadow-card">
+            <div className="mb-5 flex items-center justify-between">
               <h3 className="font-semibold text-gray-900">Filters</h3>
               {activeFilterCount > 0 && (
                 <button onClick={clearAll} className="text-xs text-red-500 hover:text-red-600">Clear all</button>
@@ -252,37 +228,58 @@ export default function ProductsPage() {
           </div>
         </aside>
 
-        {/* Mobile Filters Drawer */}
-        {filtersOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />
-            <div className="absolute right-0 top-0 h-full w-full max-w-sm overflow-y-auto bg-white p-5 shadow-2xl">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-semibold text-gray-900">Filters</h3>
-                <button onClick={() => setFiltersOpen(false)}><XMarkIcon className="w-5 h-5 text-gray-500" /></button>
-              </div>
-              <FilterPanel />
+        <div className="min-w-0">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-3xl leading-tight text-gray-900 sm:text-4xl">
+                {filters.search ? `Results for "${filters.search}"` : filters.category
+                  ? categories.find((c) => c.slug === filters.category)?.name || 'Products'
+                  : 'All Products'}
+              </h1>
+              {!loading && <p className="mt-1 text-sm text-gray-500">{pagination.total} products found</p>}
+            </div>
+            <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+              <label htmlFor="product-sort" className="sr-only">Sort products</label>
+              <select id="product-sort" value={filters.sort} onChange={(e) => setFilter('sort', e.target.value)}
+                className="input min-w-0 flex-1 py-2 text-sm sm:w-52 sm:flex-none">
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <button type="button" onClick={() => setFiltersOpen(true)}
+                className="btn-outline shrink-0 py-2 text-sm lg:hidden">
+                <AdjustmentsHorizontalIcon className="h-4 w-4" />
+                Filters {activeFilterCount > 0 && <span className="badge bg-primary-500 text-white">{activeFilterCount}</span>}
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Products grid */}
-        <div className="flex-1 min-w-0">
+          {filtersOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />
+              <div className="absolute right-0 top-0 h-full w-full max-w-sm overflow-y-auto bg-white p-5 shadow-2xl">
+                <div className="mb-5 flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900">Filters</h3>
+                  <button onClick={() => setFiltersOpen(false)}><XMarkIcon className="w-5 h-5 text-gray-500" /></button>
+                </div>
+                <FilterPanel />
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <PageSpinner />
           ) : products.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-4">🪴</div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No products found</h3>
-              <p className="text-gray-500 text-sm mb-4">Try adjusting your filters or search term.</p>
-              <button onClick={clearAll} className="btn-primary text-sm py-2">Clear Filters</button>
+            <div className="py-20 text-center">
+              <div className="mb-4 text-5xl">🪴</div>
+              <h3 className="mb-2 text-lg font-semibold text-gray-700">No products found</h3>
+              <p className="mb-4 text-sm text-gray-500">Try adjusting your filters or search term.</p>
+              <button onClick={clearAll} className="btn-primary py-2 text-sm">Clear Filters</button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
+              <div className="catalog-grid">
                 {products.map((p) => <ProductCard key={p._id} product={p} />)}
               </div>
-              <div className="mt-10">
+              <div className="mt-8">
                 <Pagination page={pagination.page} pages={pagination.pages}
                   onPageChange={(p) => setFilter('page', String(p))} />
               </div>

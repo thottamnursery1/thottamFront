@@ -8,11 +8,13 @@ const SUNLIGHT_OPTIONS = ['Full Sun', 'Partial Sun', 'Shade', 'Indirect Light', 
 const WATER_OPTIONS = ['Daily', 'Every 2-3 Days', 'Weekly', 'Bi-weekly', 'Monthly', 'N/A'];
 const CARE_OPTIONS = ['Easy', 'Moderate', 'Expert', 'N/A'];
 const PLACE_OPTIONS = ['Indoor', 'Outdoor', 'Both', 'N/A'];
+const SEASONS = ['Monsoon', 'Summer', 'Winter'];
 
 const defaultForm = {
   name: '', description: '', shortDescription: '', category: '',
   price: '', mrp: '', stock: '', lowStockThreshold: 5, sku: '',
   isActive: true, isFeatured: false, isBestSeller: false, isNewArrival: false, isOnSale: false,
+  beginnerFriendly: false, seasonalTags: [],
   tags: '',
   plantInfo: {
     sunlightRequirement: 'N/A', wateringFrequency: 'N/A', careLevel: 'N/A',
@@ -42,6 +44,10 @@ export default function AdminProductForm() {
           ...defaultForm, ...p,
           category: p.category?._id || p.category,
           tags: (p.tags || []).join(', '),
+          beginnerFriendly: Boolean(p.beginnerFriendly),
+          seasonalTags: Array.isArray(p.seasonalTags) && p.seasonalTags.length
+            ? p.seasonalTags
+            : (SEASONS.includes(p.seasonalCollection) ? [p.seasonalCollection] : []),
           plantInfo: { ...defaultForm.plantInfo, ...p.plantInfo },
         });
       }).finally(() => setLoading(false));
@@ -61,6 +67,9 @@ export default function AdminProductForm() {
         mrp: form.mrp ? Number(form.mrp) : undefined,
         stock: Number(form.stock),
         tags: form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+        beginnerFriendly: Boolean(form.beginnerFriendly),
+        seasonalTags: Array.isArray(form.seasonalTags) ? form.seasonalTags : [],
+        seasonalCollection: (Array.isArray(form.seasonalTags) ? form.seasonalTags[0] : '') || '',
       };
 
       let product;
@@ -179,6 +188,7 @@ export default function AdminProductForm() {
               { key: 'isBestSeller', label: 'Best Seller' },
               { key: 'isNewArrival', label: 'New Arrival' },
               { key: 'isOnSale', label: 'On Sale' },
+              { key: 'beginnerFriendly', label: 'Suitable for beginners' },
             ].map(({ key, label }) => (
               <label key={key} className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form[key]} onChange={(e) => set(key, e.target.checked)}
@@ -186,6 +196,28 @@ export default function AdminProductForm() {
                 <span className="text-sm text-gray-700">{label}</span>
               </label>
             ))}
+          </div>
+          <div className="mt-5">
+            <p className="text-sm font-medium text-gray-900 mb-2">Seasonal collections</p>
+            <div className="flex flex-wrap gap-2">
+              {SEASONS.map((season) => {
+                const selected = (form.seasonalTags || []).includes(season);
+                return (
+                  <button
+                    key={season}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => set('seasonalTags', selected
+                      ? form.seasonalTags.filter((item) => item !== season)
+                      : [...(form.seasonalTags || []), season])}
+                    className={`px-3 py-1.5 rounded-full text-sm border ${selected ? 'bg-primary-700 text-white border-primary-700' : 'bg-white text-gray-700 border-gray-200'}`}
+                  >
+                    {season}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Tag Monsoon to include this plant in the homepage Monsoon collection.</p>
           </div>
         </div>
 

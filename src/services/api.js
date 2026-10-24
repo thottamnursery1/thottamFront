@@ -177,11 +177,13 @@ export const nurseryAPI = {
   list: () => api.get('/nurseries'),
   getOne: (slug) => api.get(`/nurseries/${slug}`),
   register: (data) => api.post('/nurseries/register', data),
+  onboardGateway: (data) => api.post('/nurseries/payment-gateway/onboard', data),
   checkPin: (data) => api.post('/nurseries/check-pin', data),
   publicSettings: () => api.get('/nurseries/settings/public'),
   subscribe: (email) => api.post('/nurseries/newsletter', { email }),
   myApplication: () => api.get('/seller/application'),
   updateApplication: (data) => api.put('/seller/application', data),
+  updatePaymentMethods: (paymentMethods) => api.put('/seller/payment-methods', { paymentMethods }),
 };
 
 export const productAdminAPI = {

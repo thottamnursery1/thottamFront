@@ -13,11 +13,12 @@ const SUNLIGHT = ['Full Sun', 'Partial Sun', 'Shade', 'Indirect Light', 'N/A'];
 const WATERING = ['Daily', 'Every 2-3 Days', 'Weekly', 'Bi-weekly', 'Monthly', 'N/A'];
 const CARE_LVL = ['Easy', 'Moderate', 'Expert', 'N/A'];
 const IN_OUT   = ['Indoor', 'Outdoor', 'Both', 'N/A'];
+const SEASONS  = ['Monsoon', 'Summer', 'Winter'];
 
 const empty = {
   name: '', description: '', shortDescription: '', category: '', price: '',
   discountPrice: '', sku: '', stock: 0, plantType: 'foliage',
-  beginnerFriendly: false, seasonalCollection: '',
+  beginnerFriendly: false, seasonalCollection: '', seasonalTags: [],
   deliveryAvailability: 'Delivered by this nursery.',
   listingStatus: 'pending',
   plantInfo: {
@@ -264,6 +265,9 @@ export default function SellerProductForm({ client = sellerAPI, basePath = '/sel
           plantInfo:     { ...empty.plantInfo, ...p.plantInfo },
           imageUrls:     (p.images || []).map((img) => img.url).join('\n'),
           listingStatus: p.listingStatus || 'pending',
+          seasonalTags: Array.isArray(p.seasonalTags) && p.seasonalTags.length
+            ? p.seasonalTags
+            : (SEASONS.includes(p.seasonalCollection) ? [p.seasonalCollection] : []),
         });
         if (p.images?.length) {
           setPreviews(p.images.map((img) => ({ url: img.url, isBlob: false })));
@@ -273,6 +277,13 @@ export default function SellerProductForm({ client = sellerAPI, basePath = '/sel
   }, [id]);
 
   const setField = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+  const toggleSeason = (tag) => setForm((current) => {
+    const selected = Array.isArray(current.seasonalTags) ? current.seasonalTags : [];
+    const seasonalTags = selected.includes(tag)
+      ? selected.filter((item) => item !== tag)
+      : [...selected, tag];
+    return { ...current, seasonalTags, seasonalCollection: seasonalTags[0] || '' };
+  });
   const setCare  = (key, val) => setForm((f) => ({ ...f, plantInfo: { ...f.plantInfo, [key]: val } }));
 
   const handleFiles = (picked) => {
@@ -629,6 +640,33 @@ export default function SellerProductForm({ client = sellerAPI, basePath = '/sel
                   ].join(' ')} />
                 </button>
                 <span className="text-sm text-gray-700 select-none">Suitable for beginners</span>
+              </div>
+              <p className="text-xs text-muted -mt-2">Shown in Easy care — Plants for beginners when this plant is active, approved, and in stock.</p>
+
+              <div>
+                <p className="text-sm text-gray-700 mb-2">Seasonal collections</p>
+                <div className="flex flex-wrap gap-2">
+                  {SEASONS.map((season) => {
+                    const selected = (form.seasonalTags || []).includes(season);
+                    return (
+                      <button
+                        key={season}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => toggleSeason(season)}
+                        className={[
+                          'px-3 py-1.5 rounded-full text-sm border transition-colors',
+                          selected
+                            ? 'bg-primary-700 text-white border-primary-700'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-primary-400',
+                        ].join(' ')}
+                      >
+                        {season}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted mt-2">Tag Monsoon to include this plant in the Monsoon collection.</p>
               </div>
             </SectionCard>
 

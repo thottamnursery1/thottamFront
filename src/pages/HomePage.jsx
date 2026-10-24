@@ -30,7 +30,8 @@ function SkeletonGrid() {
   );
 }
 
-function Rail({ title, kicker, to, products, loading }) {
+function Rail({ title, kicker, to, products, loading, empty, linkLabel = 'View all' }) {
+  const items = (products || []).slice(0, 4);
   return (
     <section className="container-custom">
       <div className="flex items-end justify-between gap-4 mb-6">
@@ -38,23 +39,24 @@ function Rail({ title, kicker, to, products, loading }) {
           <p className="text-xs uppercase tracking-[0.18em] text-muted">{kicker}</p>
           <h2 className="text-3xl sm:text-4xl text-ink mt-1">{title}</h2>
         </div>
-        <Link to={to} className="text-sm font-semibold text-primary-700">View all</Link>
+        <Link to={to} className="text-sm font-semibold text-primary-700">{linkLabel}</Link>
       </div>
-      {loading ? <SkeletonGrid /> : (
+      {loading ? <SkeletonGrid /> : items.length > 0 ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {products.slice(0, 4).map((product) => <ProductCard key={product._id} product={product} />)}
+          {items.map((product) => <ProductCard key={product._id} product={product} />)}
         </div>
+      ) : (
+        <p className="text-muted">{empty}</p>
       )}
     </section>
   );
 }
 
 export default function HomePage() {
-  const [featured, setFeatured] = useState({ featured: [], bestSellers: [], newArrivals: [], beginners: [] });
+  const [featured, setFeatured] = useState({ featured: [], beginners: [], monsoon: [] });
   const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
   const [nurseries, setNurseries] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [seasonal, setSeasonal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [joining, setJoining] = useState(false);
@@ -67,8 +69,7 @@ export default function HomePage() {
       nurseryAPI.list(),
       nurseryAPI.publicSettings(),
       reviewAPI.getRecent(),
-      productAPI.getAll({ seasonal: 'Monsoon', limit: 4 }),
-    ]).then(([products, cats, nurs, settings, reviewRes, season]) => {
+    ]).then(([products, cats, nurs, settings, reviewRes]) => {
       setFeatured(products.data);
       const apiCats = cats.data.categories || [];
       if (apiCats.length) {
@@ -80,7 +81,6 @@ export default function HomePage() {
       setNurseries(nurs.data.nurseries || []);
       setDemoMode(Boolean(settings.data.settings?.demoMode));
       setReviews(reviewRes.data.reviews || []);
-      setSeasonal(season.data.products || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -144,28 +144,27 @@ export default function HomePage() {
       </section>
 
       <div className="mt-16 lg:mt-24 space-y-16 lg:space-y-24">
-        <Rail title="Featured this week" kicker="From the floor" to="/products?isFeatured=true" products={featured.featured?.length ? featured.featured : featured.bestSellers || []} loading={loading} />
-        <Rail title="Bestsellers" kicker="Most loved" to="/products?isBestSeller=true" products={featured.bestSellers || []} loading={loading} />
-        <Rail title="New arrivals" kicker="Just potted" to="/products?isNewArrival=true" products={featured.newArrivals || []} loading={loading} />
-        <Rail title="Plants for beginners" kicker="Easy care" to="/products?beginner=true" products={featured.beginners || []} loading={loading} />
-      </div>
-
-      <section className="container-custom mt-16 lg:mt-24">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted">Seasonal</p>
-            <h2 className="text-3xl sm:text-4xl mt-1">Monsoon collection</h2>
-          </div>
-          <Link to="/products?seasonal=Monsoon" className="text-sm font-semibold text-primary-700">View collection</Link>
-        </div>
-        {seasonal.length === 0 && !loading ? (
-          <p className="text-muted">Seasonal plants will appear here when nurseries tag a collection.</p>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {seasonal.map((product) => <ProductCard key={product._id} product={product} />)}
-          </div>
+        {(loading || (featured.featured || []).length > 0) && (
+          <Rail title="Featured this week" kicker="From the floor" to="/products?isFeatured=true" products={featured.featured || []} loading={loading} />
         )}
-      </section>
+        <Rail
+          title="Plants for beginners"
+          kicker="Easy care"
+          to="/products?beginner=true"
+          products={featured.beginners || []}
+          loading={loading}
+          empty="Plants marked suitable for beginners will appear here."
+        />
+        <Rail
+          title="Monsoon collection"
+          kicker="Seasonal"
+          to="/products?seasonal=Monsoon"
+          linkLabel="View collection"
+          products={featured.monsoon || []}
+          loading={loading}
+          empty="Seasonal plants will appear here when nurseries tag a collection."
+        />
+      </div>
 
       <section className="container-custom mt-16 lg:mt-24">
         <div className="flex items-end justify-between mb-6">

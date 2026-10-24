@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import { formatPrice } from '../../utils/helpers';
 import { ArrowLeftIcon, BuildingStorefrontIcon, CurrencyRupeeIcon, ShoppingBagIcon, CubeIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
 
 function InfoRow({ label, value }) {
   if (!value) return null;
@@ -17,8 +18,12 @@ function InfoRow({ label, value }) {
 export default function AdminSellerDetail() {
   const { id }  = useParams();
   const [data,  setData]  = useState(null);
+  const [reason, setReason] = useState('');
+  const [reviewed, setReviewed] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => { adminAPI.getSeller(id).then((res) => setData(res.data)); }, [id]);
+  const load = () => adminAPI.getSeller(id).then((res) => setData(res.data));
+  useEffect(() => { load(); }, [id]);
 
   if (!data) return (
     <div className="space-y-4">
@@ -34,8 +39,30 @@ export default function AdminSellerDetail() {
     approved:  'badge-green',
     pending:   'badge-orange',
     rejected:  'badge-red',
+    changes_requested: 'badge-orange',
     suspended: 'badge-gray',
   };
+
+  const review = async (action, extra = {}) => {
+    setBusy(true);
+    try {
+      await adminAPI.reviewSeller(id, { action, reason, paymentReviewed: reviewed, ...extra });
+      toast.success('Shop review saved.');
+      setReason('');
+      await load();
+    } catch {
+      // The API toast already explains why approval was refused.
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const methods = seller.paymentMethods || {};
+  const methodRows = [
+    methods.upi?.enabled && { key: 'upi', label: 'UPI ID', detail: methods.upi.upiId, status: methods.upi.verificationStatus },
+    methods.qr?.enabled && { key: 'qr', label: 'GPay / UPI QR code', detail: methods.qr.fileName || 'Image uploaded', status: methods.qr.verificationStatus, image: methods.qr.imageData },
+    methods.gateway?.enabled && { key: 'gateway', label: 'Bank account / payment gateway', detail: [methods.gateway.accountHolder, methods.gateway.bankName, methods.gateway.ifsc, methods.gateway.accountLast4 ? `ending ${methods.gateway.accountLast4}` : ''].filter(Boolean).join(' · '), status: `${methods.gateway.verificationStatus} · onboarding ${methods.gateway.onboardingStatus}` },
+  ].filter(Boolean);
 
   return (
     <div className="space-y-5 max-w-4xl animate-fade-in">
@@ -61,6 +88,47 @@ export default function AdminSellerDetail() {
             {[seller.address?.line1, seller.address?.city, seller.address?.state, seller.address?.postalCode].filter(Boolean).join(', ')}
           </p>
         </div>
+      </div>
+
+      <div className="card p-5 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-gray-900">Payment details</p>
+          <span className={`badge text-xs ${data.paymentSetupSatisfied ? 'badge-green' : 'badge-red'}`}>
+            {data.paymentSetupSatisfied ? 'Payment setup ready' : 'Payment setup missing'}
+          </span>
+        </div>
+        <p className="text-xs text-gray-500">A UPI ID or QR image is not proof that the account is verified. Review these details before approving the shop.</p>
+        {!methodRows.length && <p className="text-sm text-gray-500">No payment method is configured.</p>}
+        {methodRows.map((method) => (
+          <div key={method.key} className="rounded-xl border border-gray-100 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-medium text-gray-900">{method.label}</p>
+              <p className="text-xs capitalize text-gray-500">{String(method.status || '').replaceAll('_', ' ')}</p>
+            </div>
+            <p className="mt-1 text-sm text-gray-700">{method.detail}</p>
+            {method.image && <img src={method.image} alt="UPI QR code" className="mt-2 h-28 w-28 rounded-lg object-contain bg-gray-50" />}
+            <div className="mt-3 flex gap-2">
+              <button type="button" className="btn-outline text-xs py-1.5 px-3" disabled={busy} onClick={() => review('set_payment_status', { method: method.key, verificationStatus: 'verified' })}>Mark verified</button>
+              <button type="button" className="btn-outline text-xs py-1.5 px-3" disabled={busy} onClick={() => review('set_payment_status', { method: method.key, verificationStatus: 'rejected' })}>Reject method</button>
+            </div>
+          </div>
+        ))}
+        {seller.status !== 'approved' && (
+          <div className="space-y-3 border-t border-gray-100 pt-4">
+            <label className="flex items-start gap-2 text-sm text-gray-700">
+              <input type="checkbox" className="mt-1" checked={reviewed} onChange={(event) => setReviewed(event.target.checked)} />
+              I have reviewed the shop registration and payment details.
+            </label>
+            <textarea className="input" rows={2} placeholder="Reason, if you are rejecting or requesting changes" value={reason} onChange={(event) => setReason(event.target.value)} />
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn-primary text-sm" disabled={busy || !reviewed || !data.paymentSetupSatisfied} onClick={() => review(seller.status === 'suspended' ? 'reactivate' : 'approve')}>
+                {seller.status === 'suspended' ? 'Reactivate shop' : 'Approve shop'}
+              </button>
+              <button type="button" className="btn-outline text-sm" disabled={busy} onClick={() => review('request_changes')}>Request changes</button>
+              <button type="button" className="btn-outline text-sm text-red-600" disabled={busy} onClick={() => review('reject')}>Reject</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Performance + details ────────────────────────── */}

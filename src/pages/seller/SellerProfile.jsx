@@ -6,6 +6,7 @@ import {
   PhotoIcon, CurrencyRupeeIcon, GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import ChoiceSelect from '../../components/ChoiceSelect';
+import ShopPaymentMethods, { PAYMENT_REQUIRED_MESSAGE, paymentPayload, paymentReady, paymentsFromNursery } from '../../components/ShopPaymentMethods';
 
 const STATES = [
   'Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana',
@@ -43,6 +44,8 @@ function SectionCard({ icon: Icon, title, subtitle, children }) {
 export default function SellerProfile() {
   const [form,   setForm]   = useState(null);
   const [saving, setSaving] = useState(false);
+  const [payments, setPayments] = useState(null);
+  const [savingPayments, setSavingPayments] = useState(false);
 
   useEffect(() => {
     nurseryAPI.myApplication().then((res) => {
@@ -65,6 +68,7 @@ export default function SellerProfile() {
         deliveryCharge:  n.deliveryCharge || 0,
         shopOpen:        n.shopOpen !== false,
       });
+      setPayments(paymentsFromNursery(n.paymentMethods));
     });
   }, []);
 
@@ -96,8 +100,21 @@ export default function SellerProfile() {
     rejected: 'bg-red-100 text-red-700',
   }[form.status] || 'bg-gray-100 text-gray-600';
 
+  const savePayments = async (event) => {
+    event.preventDefault();
+    if (!paymentReady(payments).any) return;
+    setSavingPayments(true);
+    try {
+      await nurseryAPI.updatePaymentMethods(paymentPayload(payments));
+      toast.success('Payment methods saved.');
+    } finally {
+      setSavingPayments(false);
+    }
+  };
+
   return (
-    <form onSubmit={save} className="space-y-5 max-w-3xl animate-fade-in">
+    <div className="space-y-5 max-w-3xl animate-fade-in">
+    <form onSubmit={save} className="space-y-5">
 
       {/* ── Page header ──────────────────────────────────── */}
       <div className="page-header">
@@ -233,5 +250,17 @@ export default function SellerProfile() {
       </div>
 
     </form>
+    {payments && (
+      <form onSubmit={savePayments} className="card p-5 space-y-4">
+        <ShopPaymentMethods value={payments} onChange={setPayments} />
+        {!paymentReady(payments).any && (
+          <p className="text-sm text-red-600" role="alert">{PAYMENT_REQUIRED_MESSAGE}</p>
+        )}
+        <button type="submit" className="btn-primary" disabled={savingPayments || !paymentReady(payments).any}>
+          {savingPayments ? 'Saving…' : 'Save payment methods'}
+        </button>
+      </form>
+    )}
+    </div>
   );
 }

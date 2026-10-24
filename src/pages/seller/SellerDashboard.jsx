@@ -116,6 +116,13 @@ export default function SellerDashboard() {
         </div>
       </div>
 
+      {data.paymentSetupSatisfied === false && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Configure at least one valid payment method before publishing products. The shop can sell only after super admin approval and that payment setup.
+          {' '}<Link to="/seller/profile" className="font-medium underline">Update payment methods</Link>
+        </div>
+      )}
+
       {/* ── Period summary ───────────────────────────────── */}
       {data.reports && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

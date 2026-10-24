@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { adminAPI, authAPI } from '../../services/api';
 import { formatDate, ROLE_LABELS, normalizeEmail, EMAIL_TAKEN_MESSAGE } from '../../utils/helpers';
 import Pagination from '../../components/Pagination';
@@ -256,10 +257,9 @@ export default function AdminAccounts() {
                           )}
                           {account.shop?.status === 'pending' && (
                             <>
-                              <button className="text-xs font-medium text-emerald-600 hover:text-emerald-700"
-                                onClick={() => setPending({ kind: 'shop', shopId: account.shop._id, action: 'approve', name: account.shop.name })}>
-                                Approve shop
-                              </button>
+                              <Link className="text-xs font-medium text-emerald-600 hover:text-emerald-700" to={`/admin/sellers/${account.shop._id}`}>
+                                Review shop
+                              </Link>
                               <button className="text-xs font-medium text-red-500 hover:text-red-600"
                                 onClick={() => setPending({ kind: 'shop', shopId: account.shop._id, action: 'reject', name: account.shop.name })}>
                                 Reject shop

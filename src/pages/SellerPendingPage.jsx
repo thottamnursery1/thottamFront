@@ -4,11 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { nurseryAPI } from '../services/api';
 import { isProductManagerRole } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import ShopPaymentMethods, { PAYMENT_REQUIRED_MESSAGE, paymentPayload, paymentReady, paymentsFromNursery } from '../components/ShopPaymentMethods';
 
 const LABELS = {
   pending: 'PENDING_APPROVAL',
   approved: 'APPROVED',
   rejected: 'REJECTED',
+  changes_requested: 'CHANGES_REQUESTED',
   suspended: 'SUSPENDED',
 };
 
@@ -28,6 +30,7 @@ export default function SellerPendingPage() {
   const [shop, setShop] = useState(nursery);
   const status = shop?.status || nursery?.status || 'pending';
   const [form, setForm] = useState(() => applicationForm(nursery, user));
+  const [payments, setPayments] = useState(() => paymentsFromNursery(nursery?.paymentMethods));
 
   useEffect(() => {
     const role = user?.role;
@@ -41,6 +44,7 @@ export default function SellerPendingPage() {
         setShop(next);
         updateNursery(next);
         setForm(applicationForm(next, user));
+        setPayments(paymentsFromNursery(next.paymentMethods));
       })
       .catch(() => {});
     return () => { active = false; };
@@ -51,7 +55,8 @@ export default function SellerPendingPage() {
 
   const resubmit = async (event) => {
     event.preventDefault();
-    const res = await nurseryAPI.updateApplication(form);
+    if (!paymentReady(payments).any) return;
+    const res = await nurseryAPI.updateApplication({ ...form, paymentMethods: paymentPayload(payments) });
     toast.success(res.data.message);
     window.location.reload();
   };
@@ -83,6 +88,9 @@ export default function SellerPendingPage() {
         {status === 'rejected' && shown && (
           <p className="mt-4 text-ink/80 leading-relaxed">{shown?.rejectionReason || 'This application was not approved.'}{isShopAdmin ? ' You can update the details below and resubmit.' : ''}</p>
         )}
+        {status === 'changes_requested' && shown && (
+          <p className="mt-4 text-ink/80 leading-relaxed">{shown?.rejectionReason || 'A super admin asked for changes.'}{isShopAdmin ? ' Update the payment methods if needed, then resubmit.' : ''}</p>
+        )}
         {status === 'suspended' && (
           <p className="mt-4 text-ink/80 leading-relaxed">This shop is suspended. Product management and publishing are blocked. Existing orders remain available to the platform for review.</p>
         )}
@@ -103,7 +111,18 @@ export default function SellerPendingPage() {
             {shown.documents.map((doc) => <li key={doc.url}><a className="text-primary-700 underline" href={doc.url}>{doc.label || 'Document'}</a></li>)}
           </ul>
         )}
-        <p className="mt-6 text-sm text-muted">Product management stays disabled until the status is APPROVED. A super admin reviews the shop, then the Product Admin workspace opens for this same shop.</p>
+        {shown?.paymentMethods && (
+          <div className="mt-6 text-sm">
+            <p className="text-muted">Payment methods</p>
+            <ul className="mt-2 space-y-1">
+              {shown.paymentMethods.upi?.enabled && <li>UPI {shown.paymentMethods.upi.upiId} · {shown.paymentMethods.upi.verificationStatus?.replaceAll('_', ' ')}</li>}
+              {shown.paymentMethods.qr?.enabled && <li>QR code · {shown.paymentMethods.qr.verificationStatus?.replaceAll('_', ' ')}</li>}
+              {shown.paymentMethods.gateway?.enabled && <li>Bank / gateway · {shown.paymentMethods.gateway.accountLast4 ? `account ending ${shown.paymentMethods.gateway.accountLast4}` : 'details saved'} · {shown.paymentMethods.gateway.verificationStatus?.replaceAll('_', ' ')}</li>}
+              {!shown.paymentMethods.upi?.enabled && !shown.paymentMethods.qr?.enabled && !shown.paymentMethods.gateway?.enabled && <li>None configured</li>}
+            </ul>
+          </div>
+        )}
+        <p className="mt-6 text-sm text-muted">Product management stays disabled until the status is APPROVED and at least one valid payment method is configured. A super admin reviews the shop and the payment details first.</p>
         <div className="mt-6 pt-6 border-t border-line flex items-center justify-between">
           <Link to="/" className="text-sm text-primary-700 hover:underline">Browse products</Link>
           <button 
@@ -114,7 +133,7 @@ export default function SellerPendingPage() {
           </button>
         </div>
       </div>
-      {status === 'rejected' && isShopAdmin && (
+      {['rejected', 'changes_requested'].includes(status) && isShopAdmin && (
         <form onSubmit={resubmit} className="glass-panel rounded-[1.8rem] p-6 mt-4 space-y-3">
           <h2 className="text-2xl">Resubmit application</h2>
           <label className="block text-sm">About the shop<textarea className="input mt-1" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
@@ -126,7 +145,11 @@ export default function SellerPendingPage() {
             <input className="input" placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} />
             <input className="input" placeholder="PIN" value={form.postalCode} onChange={(e) => setForm({ ...form, postalCode: e.target.value })} />
           </div>
-          <button className="btn-primary">Resubmit for approval</button>
+          <ShopPaymentMethods value={payments} onChange={setPayments} />
+          {!paymentReady(payments).any && (
+            <p className="text-sm text-red-600" role="alert">{PAYMENT_REQUIRED_MESSAGE}</p>
+          )}
+          <button className="btn-primary" disabled={!paymentReady(payments).any}>Submit for Approval</button>
         </form>
       )}
     </div>

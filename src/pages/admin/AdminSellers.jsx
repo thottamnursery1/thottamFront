@@ -4,12 +4,13 @@ import { adminAPI } from '../../services/api';
 import { BuildingStorefrontIcon, CheckCircleIcon, XCircleIcon, PauseCircleIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-const STATUS_OPTIONS = ['', 'pending', 'approved', 'rejected', 'suspended'];
+const STATUS_OPTIONS = ['', 'pending', 'changes_requested', 'approved', 'rejected', 'suspended'];
 
 const STATUS_BADGE = {
   approved:  'badge-green',
   pending:   'badge-orange',
   rejected:  'badge-red',
+  changes_requested: 'badge-orange',
   suspended: 'badge-gray',
 };
 
@@ -105,13 +106,10 @@ export default function AdminSellers() {
 
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2 flex-shrink-0">
-                {seller.status !== 'approved' && (
-                  <button
-                    onClick={() => setPendingAction({ id: seller._id, action: 'approve', name: seller.name })}
-                    className="btn-primary gap-1.5 text-xs py-1.5 px-3"
-                  >
-                    <CheckCircleIcon className="w-3.5 h-3.5" /> Approve
-                  </button>
+                {seller.status !== 'approved' && seller.status !== 'suspended' && (
+                  <Link to={`/admin/sellers/${seller._id}`} className="btn-primary gap-1.5 text-xs py-1.5 px-3">
+                    <CheckCircleIcon className="w-3.5 h-3.5" /> Review
+                  </Link>
                 )}
                 {seller.status === 'pending' && (
                   <button
@@ -130,12 +128,9 @@ export default function AdminSellers() {
                   </button>
                 )}
                 {seller.status === 'suspended' && (
-                  <button
-                    onClick={() => setPendingAction({ id: seller._id, action: 'reactivate', name: seller.name })}
-                    className="btn-outline gap-1.5 text-xs py-1.5 px-3"
-                  >
-                    <PlayCircleIcon className="w-3.5 h-3.5" /> Reactivate
-                  </button>
+                  <Link to={`/admin/sellers/${seller._id}`} className="btn-outline gap-1.5 text-xs py-1.5 px-3">
+                    <PlayCircleIcon className="w-3.5 h-3.5" /> Review to reactivate
+                  </Link>
                 )}
                 <Link to={`/admin/sellers/${seller._id}`} className="btn-ghost text-xs py-1.5 px-3">
                   Details →

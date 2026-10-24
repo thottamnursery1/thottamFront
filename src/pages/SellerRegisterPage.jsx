@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { EMAIL_TAKEN_MESSAGE, normalizeEmail } from '../utils/helpers';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import ShopPaymentMethods, { emptyPayments, PAYMENT_REQUIRED_MESSAGE, paymentPayload, paymentReady } from '../components/ShopPaymentMethods';
 
 const initial = {
   nurseryName: '', ownerName: '', email: '', phone: '', password: '',
@@ -115,6 +116,8 @@ export default function SellerRegisterPage() {
   const [formError, setFormError] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [payments, setPayments] = useState(emptyPayments);
+  const paymentsOk = paymentReady(payments).any;
   const { acceptSellerSession } = useAuth();
   const navigate = useNavigate();
 
@@ -178,9 +181,11 @@ export default function SellerRegisterPage() {
     setFormError('');
     const next = collectErrors(form);
     setErrors(next);
-    if (Object.keys(next).length) {
-      const first = FIELD_ORDER.find((name) => next[name]);
-      document.getElementById(first)?.focus();
+    if (Object.keys(next).length || !paymentReady(payments).any) {
+      if (Object.keys(next).length) {
+        const first = FIELD_ORDER.find((name) => next[name]);
+        document.getElementById(first)?.focus();
+      }
       return;
     }
     const email = normalizeEmail(form.email);
@@ -199,6 +204,7 @@ export default function SellerRegisterPage() {
         email,
         gstin: form.gstin.trim().toUpperCase(),
         documents: form.documentUrl.trim() ? [{ label: form.documentLabel.trim() || 'Document', url: form.documentUrl.trim() }] : [],
+        paymentMethods: paymentPayload(payments),
       });
       acceptSellerSession(res.data.token, res.data.user, res.data.nursery);
       toast.success(res.data.message);
@@ -303,7 +309,14 @@ export default function SellerRegisterPage() {
           </div>
         </section>
 
-        <button className="btn-primary w-full sm:w-auto" disabled={loading}>{loading ? 'Submitting…' : 'Submit application'}</button>
+        <section>
+          <ShopPaymentMethods value={payments} onChange={setPayments} />
+        </section>
+
+        {!paymentsOk && (
+          <p className="text-sm text-red-600" role="alert">{PAYMENT_REQUIRED_MESSAGE}</p>
+        )}
+        <button className="btn-primary w-full sm:w-auto" disabled={loading || !paymentsOk}>{loading ? 'Submitting…' : 'Submit for Approval'}</button>
       </form>
     </div>
   );

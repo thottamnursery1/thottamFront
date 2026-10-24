@@ -7,7 +7,10 @@ const empty = {
   name: '', category: '', price: '', mrp: '', stock: 1, plantType: 'herb', plantForm: 'mature',
   description: '', careInstructions: '', height: '', potSize: '', dispatchPrepHours: 24,
   localDeliveryFee: 40, imageUrls: '', pickup: true, local: true, courier: false,
+  beginnerFriendly: false, seasonalTags: [],
 };
+
+const SEASONS = ['Monsoon', 'Summer', 'Winter'];
 
 export default function CommunityProductForm() {
   const { id } = useParams();
@@ -40,6 +43,10 @@ export default function CommunityProductForm() {
         pickup: product.fulfillmentOptions?.includes('pickup') ?? true,
         local: product.fulfillmentOptions?.includes('local_delivery') ?? true,
         courier: product.fulfillmentOptions?.includes('courier') || false,
+        beginnerFriendly: Boolean(product.beginnerFriendly),
+        seasonalTags: Array.isArray(product.seasonalTags) && product.seasonalTags.length
+          ? product.seasonalTags
+          : (SEASONS.includes(product.seasonalCollection) ? [product.seasonalCollection] : []),
       });
     });
   }, [id]);
@@ -131,6 +138,30 @@ export default function CommunityProductForm() {
           <label><input type="checkbox" checked={form.pickup} onChange={(e) => set('pickup', e.target.checked)} /> Customer pickup</label>
           <label><input type="checkbox" checked={form.local} onChange={(e) => set('local', e.target.checked)} /> Local delivery</label>
           <label><input type="checkbox" checked={form.courier} onChange={(e) => set('courier', e.target.checked)} /> Courier</label>
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-sm inline-flex items-center gap-2">
+            <input type="checkbox" checked={form.beginnerFriendly} onChange={(e) => set('beginnerFriendly', e.target.checked)} />
+            Suitable for beginners
+          </label>
+          <p className="text-xs text-muted mt-1">Eligible for the homepage Easy care collection.</p>
+          <p className="text-sm mt-4 mb-2">Seasonal collections</p>
+          <div className="flex flex-wrap gap-2">
+            {SEASONS.map((season) => {
+              const selected = form.seasonalTags.includes(season);
+              return (
+                <button
+                  key={season}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => set('seasonalTags', selected ? form.seasonalTags.filter((item) => item !== season) : [...form.seasonalTags, season])}
+                  className={`px-3 py-1.5 rounded-full text-sm border ${selected ? 'bg-primary-700 text-white border-primary-700' : 'bg-white text-gray-700 border-gray-200'}`}
+                >
+                  {season}
+                </button>
+              );
+            })}
+          </div>
         </div>
         <label className="text-sm sm:col-span-2">Image URLs, one https link per line
           <textarea id="plant-images" className="input mt-1 min-h-24" value={form.imageUrls} onChange={(e) => set('imageUrls', e.target.value)} required />

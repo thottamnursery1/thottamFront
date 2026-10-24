@@ -46,9 +46,6 @@
   }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   DESIGN TOKENS — CSS custom properties
-────────────────────────────────────────────────────────────── */
 :root {
   --sidebar-w: 240px;
   --sidebar-w-collapsed: 68px;
@@ -60,12 +57,9 @@
   --shadow-card-hover: 0 4px 20px rgba(0,0,0,0.11);
 }
 
-/* ─────────────────────────────────────────────────────────────
-   COMPONENT LAYER
-────────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* ── Buttons ──────────────────────────────────────────────── */
+  /* ── Buttons  */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
            bg-primary-700 text-white text-sm font-semibold
@@ -110,7 +104,7 @@
            transition-colors duration-150;
   }
 
-  /* ── Inputs ───────────────────────────────────────────────── */
+  /* ── Inputs ─ */
   .input {
     @apply w-full px-3.5 py-2.5 border border-gray-200
            rounded-[10px] text-sm text-ink placeholder-gray-400
@@ -131,7 +125,7 @@
     @apply space-y-1.5;
   }
 
-  /* ── Cards ────────────────────────────────────────────────── */
+  /* ── Cards ── */
   .card {
     @apply bg-white rounded-[14px] overflow-hidden;
     box-shadow: var(--shadow-card);
@@ -149,7 +143,7 @@
     box-shadow: 0 4px 24px rgba(23, 63, 53, 0.07);
   }
 
-  /* ── Stat card variants ───────────────────────────────────── */
+  /* ── Stat card variants  */
   .stat-card {
     @apply card p-5 flex flex-col gap-3;
   }
@@ -167,7 +161,7 @@
     @apply text-sm font-semibold text-gray-900;
   }
 
-  /* ── Badges ───────────────────────────────────────────────── */
+  /* ── Badges ─ */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
   }
@@ -179,7 +173,7 @@
   .badge-purple { @apply badge bg-purple-100 text-purple-700; }
   .badge-gray   { @apply badge bg-gray-100 text-gray-600; }
 
-  /* ── Tables ───────────────────────────────────────────────── */
+  /* ── Tables ─ */
   .data-table {
     @apply w-full text-sm border-collapse;
   }
@@ -200,7 +194,7 @@
     @apply px-4 py-3 text-gray-700;
   }
 
-  /* ── Page layout ──────────────────────────────────────────── */
+  /* ── Page layout ─────── */
   .page-header {
     @apply flex flex-wrap items-center justify-between gap-4 mb-6;
   }
@@ -218,55 +212,53 @@
     @apply text-xs font-bold text-gray-400 uppercase tracking-widest;
   }
 
-  /* ── Sidebar ──────────────────────────────────────────────── */
-  .sidebar-root {
-    background: linear-gradient(180deg, #0F2820 0%, #0C1F18 100%);
-    border-right: 1px solid rgba(255,255,255,0.05);
-    flex-shrink: 0;
-    overflow: hidden;
-    transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-direction: column;
+  .sidebar-root{background:linear-gradient(180deg,#0F2820,#0C1F18);border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;overflow:hidden;transition:width 240ms cubic-bezier(.4,0,.2,1);height:100vh;position:sticky;top:0;display:flex;flex-direction:column}
+  .sidebar-nav-item{@apply relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer select-none;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden}
+  .sidebar-nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.92)}
+  .sidebar-nav-item.active{background:rgba(62,148,108,.22);color:#fff;box-shadow:inset 2px 0 0 #3E946C}
+  .sidebar-nav-item .nav-icon{@apply flex-shrink-0 w-[18px] h-[18px];min-width:18px}
+  .sidebar-nav-item .nav-label{@apply overflow-hidden whitespace-nowrap;transition:opacity 200ms,max-width 200ms}
+  .sidebar-section-label{@apply px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.14em];color:rgba(255,255,255,.28);white-space:nowrap;overflow:hidden}
+
+  .store-sidebar {
+    background:
+      radial-gradient(90% 28% at 0% 0%, rgba(205, 232, 213, 0.75), transparent 58%),
+      linear-gradient(180deg, #FFFCF7 0%, #F6F3EA 52%, #F1EDE3 100%);
+    border-right: 1px solid rgba(23, 63, 53, 0.08);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.7);
   }
 
-  .sidebar-nav-item {
-    @apply relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
-           font-medium transition-all duration-150 cursor-pointer select-none;
-    /* 'group' cannot be used inside @apply — applied via plain CSS class name in JSX */
-    color: rgba(255,255,255,0.62);
-    white-space: nowrap;
-    overflow: hidden;
+  .store-sidebar summary::-webkit-details-marker { display: none; }
+
+  .store-nav-link, .sn {
+    @apply relative flex items-center gap-3 rounded-2xl px-2 py-1.5 text-[13.5px] font-medium text-ink/75 transition-all duration-200;
   }
 
-  .sidebar-nav-item:hover {
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.92);
+  .store-nav-link:hover, .sn:hover {
+    background: rgba(255, 255, 255, 0.78);
+    color: #173F35;
+    box-shadow: 0 1px 2px rgba(23, 63, 53, 0.05);
   }
 
-  .sidebar-nav-item.active {
-    background: rgba(62,148,108,0.22);
-    color: #ffffff;
-    box-shadow: inset 2px 0 0 #3E946C;
+  .store-nav-icon {
+    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-primary-700 shadow-sm ring-1 ring-primary-900/10 transition-colors;
   }
 
-  .sidebar-nav-item .nav-icon {
-    @apply flex-shrink-0 w-[18px] h-[18px];
-    min-width: 18px;
+  .store-nav-link[aria-current=page], .sn[aria-current=page] {
+    background: #173F35;
+    color: #F8F6EF;
+    box-shadow: 0 10px 22px rgba(23, 63, 53, 0.16);
   }
-
-  .sidebar-nav-item .nav-label {
-    @apply overflow-hidden whitespace-nowrap;
-    transition: opacity 200ms, max-width 200ms;
+  .store-nav-link[aria-current=page]:hover, .sn[aria-current=page]:hover {
+    background: #12312A;
+    color: #F8F6EF;
   }
-
-  .sidebar-section-label {
-    @apply px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.14em];
-    color: rgba(255,255,255,0.28);
-    white-space: nowrap;
-    overflow: hidden;
+  .store-nav-link[aria-current=page] .store-nav-icon,
+  .sn[aria-current=page] .store-nav-icon {
+    background: rgba(255, 255, 255, 0.14);
+    color: #F8F6EF;
+    box-shadow: none;
+    --tw-ring-color: transparent;
   }
 
   /* Tooltip for collapsed sidebar */
@@ -287,7 +279,7 @@
     opacity: 1;
   }
 
-  /* ── Filter bar ───────────────────────────────────────────── */
+  /* ── Filter bar ──────── */
   .filter-bar {
     @apply flex flex-wrap items-center gap-2 p-4 bg-gray-50/70 border-b border-gray-100;
   }
@@ -297,12 +289,12 @@
     min-width: 140px;
   }
 
-  /* ── Empty state ──────────────────────────────────────────── */
+  /* ── Empty state ─────── */
   .empty-state {
     @apply flex flex-col items-center justify-center py-16 px-6 text-center;
   }
 
-  /* ── Container ────────────────────────────────────────────── */
+  /* ── Container ───────── */
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -313,9 +305,6 @@
   }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   UTILITY LAYER
-────────────────────────────────────────────────────────────── */
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
@@ -336,33 +325,13 @@
     background: rgba(62,148,108,0.3);
   }
 
-  .scrollbar-gloss {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.22) transparent;
-  }
-  .scrollbar-gloss::-webkit-scrollbar { width: 4px; }
-  .scrollbar-gloss::-webkit-scrollbar-track { background: transparent; margin: 8px 0; }
-  .scrollbar-gloss::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: rgba(255,255,255,0.22);
-  }
-  .scrollbar-gloss::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.38);
-  }
+  .scrollbar-gloss{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+  .scrollbar-gloss::-webkit-scrollbar{width:4px}
+  .scrollbar-gloss::-webkit-scrollbar-thumb{border-radius:999px;background:rgba(255,255,255,.22)}
+  .scrollbar-gloss::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.38)}
 
-  .gradient-text {
-    background: linear-gradient(135deg, #173F35 0%, #3E946C 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .min-w-0-safe { min-width: 0; }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   SKELETON / LOADING
-────────────────────────────────────────────────────────────── */
 .skeleton {
   background: linear-gradient(90deg, #E8EDEA 25%, #F4F6F3 50%, #E8EDEA 75%);
   background-size: 200% 100%;
@@ -370,68 +339,37 @@
   border-radius: 10px;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   GLASSMORPHISM (storefront)
-────────────────────────────────────────────────────────────── */
-.glass {
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.80);
-}
+.glass{background:rgba(255,255,255,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8)}
 
-/* ─────────────────────────────────────────────────────────────
-   STOREFRONT PAGE BACKGROUND
-────────────────────────────────────────────────────────────── */
-.storefront-bg {
-  background-color: #F8F6EF;
-  background-image:
-    radial-gradient(ellipse 70% 45% at 0% -10%, rgba(205,232,213,0.75), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 100% 0%, rgba(227,235,221,0.90), transparent 50%);
-  background-attachment: fixed;
-}
+.storefront-bg { background: #F8F6EF; }
 
-/* ─────────────────────────────────────────────────────────────
-   PRODUCT CARD
-────────────────────────────────────────────────────────────── */
-.product-card {
-  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1);
+.product-card { transition: transform .25s ease, box-shadow .25s ease; }
+
+.catalog-grid { display:grid; width:100%; gap:.75rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (min-width: 640px) {
+  .catalog-grid { gap: 1rem; }
+}
+@media (min-width: 1024px) {
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
 }
 .product-card:hover {
   transform: translateY(-3px);
 }
 
-/* ─────────────────────────────────────────────────────────────
-   SWIPER
-────────────────────────────────────────────────────────────── */
 .swiper-pagination-bullet-active {
   background: #173F35 !important;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   CARTON BOX DIALOG ANIMATIONS
-────────────────────────────────────────────────────────────── */
-@keyframes carton-rise {
-  from { opacity: 0; transform: translateY(18px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes carton-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes carton-sway {
-  0%, 100% { transform: rotate(-5deg); }
-  50%       { transform: rotate(6deg); }
-}
+@keyframes carton-rise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes carton-fade{from{opacity:0}to{opacity:1}}
+@keyframes carton-sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)}}
+.carton-rise{animation:carton-rise .38s ease-out}
+.carton-fade{animation:carton-fade .28s ease-out}
+.carton-leaf{animation:carton-sway 3.6s ease-in-out infinite}
+.carton-leaf-delay{animation-delay:.6s}
 
-.carton-rise  { animation: carton-rise  0.38s ease-out; }
-.carton-fade  { animation: carton-fade  0.28s ease-out; }
-.carton-leaf  { animation: carton-sway  3.6s ease-in-out infinite; }
-.carton-leaf-delay { animation-delay: 0.6s; }
-
-/* ─────────────────────────────────────────────────────────────
-   ANIMATIONS
-────────────────────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -448,33 +386,7 @@
 .shadow-card       { box-shadow: var(--shadow-card); }
 .shadow-card-hover { box-shadow: var(--shadow-card-hover); }
 
-/* ─────────────────────────────────────────────────────────────
-   SIDEBAR DASHBOARD LAYOUT
-   Uses CSS grid so the sidebar never overlaps main content.
-────────────────────────────────────────────────────────────── */
-.dashboard-layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  background: #F0F2EF;
-}
-
-.dashboard-main {
-  flex: 1;
-  min-width: 0;           /* critical — prevents flex child from overflowing */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.dashboard-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 28px;
-}
-
-@media (max-width: 1023px) {
-  .dashboard-content {
-    padding: 20px 16px;
-  }
-}
+.dashboard-layout{display:flex;height:100vh;overflow:hidden;background:#F0F2EF}
+.dashboard-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.dashboard-content{flex:1;overflow-y:auto;padding:28px}
+@media(max-width:1023px){.dashboard-content{padding:20px 16px}}
