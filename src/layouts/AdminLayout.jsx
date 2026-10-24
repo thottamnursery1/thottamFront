@@ -20,6 +20,7 @@ const navItems = [
   { to: '/admin/sellers',     label: 'Nurseries',   icon: BuildingStorefrontIcon,             section: 'People' },
   { to: '/admin/community',   label: 'Community',   icon: UserGroupIcon,                     section: 'People' },
   { to: '/admin/plants',      label: 'Plant exchange', icon: SparklesIcon,                   section: 'People' },
+  { to: '/admin/auctions',    label: 'Auctions',    icon: BanknotesIcon,                     section: 'Finance' },
   { to: '/admin/settlements', label: 'Settlements', icon: BanknotesIcon,                     section: 'Finance' },
   { to: '/admin/settings',    label: 'Settings',    icon: Cog6ToothIcon,                     section: 'System' },
 ];

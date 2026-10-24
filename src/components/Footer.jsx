@@ -31,7 +31,7 @@ export default function Footer() {
             <li><Link to="/plant-care">Plant care</Link></li>
             <li><Link to="/policies/shipping">Delivery</Link></li>
             <li><Link to="/policies/returns">Returns & cancellation</Link></li>
-            <li><a href="mailto:hello@rootandbloom.test">hello@rootandbloom.test</a></li>
+            <li><a href="mailto:hello@thottam.test">hello@thottam.test</a></li>
           </ul>
         </div>
         <div>
@@ -46,7 +46,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-custom py-4 text-xs text-sage-300 flex flex-col sm:flex-row gap-2 sm:justify-between">
-          <span>© {new Date().getFullYear()} Root & Bloom</span>
+          <span>© {new Date().getFullYear()} Thottam</span>
           <span>Demo catalog is labeled in the shop. Payments require Razorpay test keys.</span>
         </div>
       </div>

@@ -8,11 +8,13 @@ import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { nurseryAPI } from '../services/api';
+import { isProductManagerRole } from '../utils/helpers';
 
 const LINKS = [
   { label: 'Home', to: '/' },
   { label: 'Shop', to: '/products' },
   { label: 'Adopt & exchange', to: '/plants' },
+  { label: 'Auctions', to: '/auctions' },
   { label: 'Indoor', to: '/products?category=indoor-plants' },
   { label: 'Outdoor', to: '/products?category=outdoor-plants' },
   { label: 'Flowering', to: '/products?category=flowering-plants' },
@@ -73,7 +75,7 @@ export default function Navbar() {
     ? '/login'
     : user?.role === 'admin' || user?.role === 'super_admin'
       ? '/admin'
-      : user?.role === 'shop_assistant'
+      : isProductManagerRole(user?.role)
         ? (nursery?.status === 'approved' ? '/product-admin' : '/seller/pending')
         : user?.role === 'seller' || user?.role === 'shop_admin'
           ? (nursery?.status === 'approved' ? '/seller' : '/seller/pending')
@@ -147,6 +149,11 @@ export default function Navbar() {
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       role="menuitem">
                       My Plant Activities
+                    </Link>
+                    <Link to="/account/auctions" onClick={() => setAccountMenu(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      role="menuitem">
+                      My Auctions
                     </Link>
                     <Link to="/community/apply" onClick={() => setAccountMenu(false)}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

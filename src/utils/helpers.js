@@ -76,12 +76,14 @@ export const EMAIL_TAKEN_MESSAGE = 'This email is already registered. Please use
 
 export const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
 
+export const isProductManagerRole = (role) => role === 'product_admin' || role === 'shop_assistant';
+
 export const ROLE_LABELS = {
   customer: 'Customer',
   seller: 'Shop admin',
   shop_admin: 'Shop admin',
-  product_admin: 'Shop assistant',
-  shop_assistant: 'Shop assistant',
+  product_admin: 'Product Manager',
+  shop_assistant: 'Product Manager',
   admin: 'Super admin',
   super_admin: 'Super admin',
 };

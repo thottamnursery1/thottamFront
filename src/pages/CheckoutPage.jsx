@@ -7,6 +7,7 @@ import { formatPrice } from '../utils/helpers';
 import { MapPinIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import CartonBoxDialog from '../components/CartonBoxDialog';
+import ChoiceSelect from '../components/ChoiceSelect';
 
 const STATES = ['Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal'];
 
@@ -107,7 +108,7 @@ export default function CheckoutPage() {
         key,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
-        name: 'Green Roots Nursery',
+        name: 'Thottam',
         description: `Order #${order.orderNumber}`,
         order_id: razorpayOrder.id,
         prefill: {
@@ -229,11 +230,13 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="label">State <span className="text-red-500">*</span></label>
-                  <select value={address.state} onChange={(e) => setAddr('state', e.target.value)}
-                    className={`input ${errors.state ? 'input-error' : ''}`}>
-                    <option value="">Select State</option>
-                    {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <ChoiceSelect
+                    value={address.state}
+                    placeholder="Select State"
+                    error={Boolean(errors.state)}
+                    options={STATES}
+                    onChange={(e) => setAddr('state', e.target.value)}
+                  />
                   {errors.state && <p className="text-xs text-red-500 mt-1">{errors.state}</p>}
                 </div>
                 <div>

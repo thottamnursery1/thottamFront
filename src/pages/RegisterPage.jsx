@@ -121,7 +121,7 @@ export default function RegisterPage() {
         phone: form.phone.trim(), 
         password: form.password 
       });
-      toast.success(`Welcome to Green Roots, ${user.name}!`);
+      toast.success(`Welcome to Thottam, ${user.name}!`);
       navigate('/');
     } catch (err) {
       const message = err.response?.data?.message;
@@ -137,7 +137,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">GR</div>
           <h1 className="text-3xl font-display font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-500 mt-2">Join Green Roots and start growing</p>
+          <p className="text-gray-500 mt-2">Join Thottam and start growing</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">

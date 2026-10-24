@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { nurseryAPI } from '../services/api';
+import { isProductManagerRole } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
 const LABELS = {
@@ -66,14 +67,14 @@ export default function SellerPendingPage() {
         </Link>
       </div>
       <div className="glass-panel rounded-[1.8rem] p-6 sm:p-8">
-        {user?.role === 'shop_assistant' && !nursery ? (
+        {isProductManagerRole(user?.role) && !nursery ? (
           <span className="badge-orange">SHOP REQUIRED</span>
         ) : (
           <span className="badge-green">{LABELS[status] || status}</span>
         )}
         <p className="text-xs uppercase tracking-[0.18em] text-muted mt-4">Shop application</p>
         <h1 className="text-4xl mt-2">{shown?.name || user?.name}</h1>
-        {user?.role === 'product_admin' && !nursery && (
+        {isProductManagerRole(user?.role) && !nursery && (
           <p className="mt-4 text-ink/80 leading-relaxed">A shop assignment is required before you can manage products. Ask a super admin or your shop admin to assign you to a shop.</p>
         )}
         {status === 'pending' && shown && (
@@ -86,8 +87,8 @@ export default function SellerPendingPage() {
           <p className="mt-4 text-ink/80 leading-relaxed">This shop is suspended. Product management and publishing are blocked. Existing orders remain available to the platform for review.</p>
         )}
         {status === 'approved' && shown && (
-          <Link to={user?.role === 'product_admin' ? '/product-admin' : '/seller'} className="btn-primary mt-6">
-            {user?.role === 'product_admin' ? 'Open product admin' : 'Open shop admin'}
+          <Link to={isProductManagerRole(user?.role) ? '/product-admin' : '/seller'} className="btn-primary mt-6">
+            {isProductManagerRole(user?.role) ? 'Open product admin' : 'Open shop admin'}
           </Link>
         )}
         <dl className="mt-6 grid sm:grid-cols-2 gap-3 text-sm">

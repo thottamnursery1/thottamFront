@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authAPI } from '../services/api';
+import { isProductManagerRole } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isShopAdmin = user?.role === 'seller' || user?.role === 'shop_admin';
-  const isProductAdmin = user?.role === 'shop_assistant';
+  const isProductAdmin = isProductManagerRole(user?.role);
   const isSeller = isShopAdmin;
   const isAuthenticated = !!user;
 

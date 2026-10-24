@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 
@@ -22,15 +22,18 @@ const ACCENT = {
   'product-admin': '#287A55',
 };
 
-function NavItem({ item, collapsed }) {
+function itemMatches(item, pathname) {
+  if (item.end) return pathname === item.to;
+  return pathname === item.to || pathname.startsWith(`${item.to}/`);
+}
+
+function NavItem({ item, collapsed, active }) {
   const Icon = item.icon;
   return (
     <NavLink
       to={item.to}
       end={item.end}
-      className={({ isActive }) =>
-        `sidebar-nav-item ${isActive ? 'active' : ''}`
-      }
+      className={() => `sidebar-nav-item ${active ? 'active' : ''}`}
     >
       {/* Icon */}
       <span className="nav-icon flex-shrink-0">
@@ -72,6 +75,11 @@ export default function DashboardLayout({ navItems = [], brand, user, onLogout, 
   }, {});
 
   const sidebarWidth = collapsed ? 68 : 240;
+
+  const { pathname } = useLocation();
+  const activeTo = navItems
+    .filter((item) => itemMatches(item, pathname))
+    .sort((a, b) => b.to.length - a.to.length)[0]?.to;
 
   const SidebarContent = ({ isMobile = false }) => (
     <div
@@ -152,7 +160,7 @@ export default function DashboardLayout({ navItems = [], brand, user, onLogout, 
                   key={item.to}
                   onClick={() => isMobile && setMobileOpen(false)}
                 >
-                  <NavItem item={item} collapsed={collapsed && !isMobile} />
+                  <NavItem item={item} collapsed={collapsed && !isMobile} active={item.to === activeTo} />
                 </div>
               ))}
             </div>

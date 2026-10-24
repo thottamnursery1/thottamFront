@@ -55,7 +55,7 @@ export default function CartPage() {
         {/* Cart items */}
         <div className="lg:col-span-2 space-y-6">
           {Object.entries((cart.items || []).reduce((groups, item) => {
-            const key = item.nurseryName || 'Root & Bloom';
+            const key = item.nurseryName || 'Thottam';
             groups[key] = groups[key] || [];
             groups[key].push(item);
             return groups;

@@ -10,7 +10,7 @@ export default function NurseriesPage() {
   return (
     <div className="container-custom py-10">
       <h1 className="text-4xl sm:text-5xl">Nurseries</h1>
-      <p className="text-muted mt-3 max-w-xl">Every plant on Root & Bloom is sold by an approved nursery. Open a grower to see only their plants.</p>
+      <p className="text-muted mt-3 max-w-xl">Every plant on Thottam is sold by an approved nursery. Open a grower to see only their plants.</p>
       {loading ? <div className="h-48 skeleton rounded-3xl mt-8" /> : (
         <div className="grid md:grid-cols-2 gap-4 mt-8">
           {nurseries.length === 0 && <p>No approved nurseries yet.</p>}

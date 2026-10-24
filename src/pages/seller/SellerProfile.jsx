@@ -5,6 +5,7 @@ import {
   BuildingStorefrontIcon, MapPinIcon, PhoneIcon, ClockIcon,
   PhotoIcon, CurrencyRupeeIcon, GlobeAltIcon,
 } from '@heroicons/react/24/outline';
+import ChoiceSelect from '../../components/ChoiceSelect';
 
 const STATES = [
   'Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana',
@@ -172,10 +173,12 @@ export default function SellerProfile() {
             <input className="input" {...bind('city')} />
           </Field>
           <Field label="State">
-            <select className="input" value={form.state} onChange={(e) => set('state', e.target.value)}>
-              <option value="">Select State</option>
-              {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <ChoiceSelect
+              value={form.state}
+              placeholder="Select State"
+              options={STATES}
+              onChange={(e) => set('state', e.target.value)}
+            />
           </Field>
           <Field label="PIN Code">
             <input className="input" {...bind('postalCode')} placeholder="6-digit PIN" maxLength={6} />

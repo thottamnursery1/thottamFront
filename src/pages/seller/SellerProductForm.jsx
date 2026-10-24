@@ -1,4 +1,5 @@
 import { Children, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { sellerAPI, categoryAPI } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -124,12 +125,16 @@ function FormSelect({ id, error, value, onChange, children }) {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (event) => { if (event.key === 'Escape') setOpen(false); };
+    const scroller = document.querySelector('.dashboard-content');
+    const previousBody = document.body.style.overflow;
+    const previousScroller = scroller?.style.overflow ?? '';
     document.addEventListener('keydown', onKey);
-    const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    if (scroller) scroller.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = previous;
+      document.body.style.overflow = previousBody;
+      if (scroller) scroller.style.overflow = previousScroller;
     };
   }, [open]);
 
@@ -159,17 +164,17 @@ function FormSelect({ id, error, value, onChange, children }) {
         <ChevronDownIcon className="h-4 w-4 shrink-0 text-gray-400" />
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+      {open && createPortal(
+        <div className="fixed inset-0 z-[80] flex items-end justify-center overflow-hidden overscroll-none sm:items-center sm:p-4">
           <button type="button" className="absolute inset-0 bg-primary-950/45" aria-label="Close choices" onClick={() => setOpen(false)} />
-          <div className="relative flex max-h-[80vh] w-full flex-col rounded-t-3xl bg-[#F8F6EF] shadow-2xl sm:max-w-md sm:rounded-3xl">
-            <div className="flex items-center justify-between px-5 pb-3 pt-5">
+          <div className="relative flex max-h-[min(78dvh,640px)] w-full flex-col overflow-hidden rounded-t-3xl bg-[#F8F6EF] shadow-2xl sm:max-w-md sm:rounded-3xl">
+            <div className="flex shrink-0 items-center justify-between px-5 pb-3 pt-5">
               <h3 className="font-display text-2xl text-primary-800">{placeholder}</h3>
               <button type="button" onClick={() => setOpen(false)} className="rounded-full p-2 text-muted hover:bg-white" aria-label="Close">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
-            <ul id={listId} role="listbox" className="space-y-1 overflow-y-auto px-3 pb-5">
+            <ul id={listId} role="listbox" className="max-h-[calc(78dvh-4.75rem)] space-y-1 overflow-y-auto overscroll-contain px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
               {choices.map((option) => {
                 const active = option.value === String(value ?? '');
                 return (
@@ -191,7 +196,8 @@ function FormSelect({ id, error, value, onChange, children }) {
               })}
             </ul>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
@@ -355,7 +361,7 @@ export default function SellerProductForm({ client = sellerAPI, basePath = '/sel
       : 0;
 
   return (
-    <div className="min-h-screen bg-[#f7f6f2]">
+    <div className="bg-[#f7f6f2]">
 
       {/* ── sticky top bar ── */}
       <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { normalizeEmail } from '../utils/helpers';
+import { normalizeEmail, isProductManagerRole } from '../utils/helpers';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -38,10 +38,12 @@ export default function LoginPage() {
     try {
       const user = await login(normalizeEmail(form.email), form.password);
       toast.success(`Welcome back, ${user.name}!`);
-      if (from !== '/') navigate(from, { replace: true });
-      else if (user.role === 'admin' || user.role === 'super_admin') navigate('/admin', { replace: true });
-      else if (user.role === 'shop_assistant') navigate(user.nursery?.status === 'approved' && (user.shop || user.nursery) ? '/product-admin' : '/seller/pending', { replace: true });
-      else if (user.role === 'seller' || user.role === 'shop_admin') navigate(user.nursery?.status === 'approved' ? '/seller' : '/seller/pending', { replace: true });
+      const productManager = isProductManagerRole(user.role);
+      const shopApproved = user.nursery?.status === 'approved';
+      if (user.role === 'admin' || user.role === 'super_admin') navigate('/admin', { replace: true });
+      else if (productManager) navigate(shopApproved && (user.shop || user.nursery) ? '/product-admin' : '/seller/pending', { replace: true });
+      else if (user.role === 'seller' || user.role === 'shop_admin') navigate(shopApproved ? '/seller' : '/seller/pending', { replace: true });
+      else if (from !== '/') navigate(from, { replace: true });
       else navigate('/', { replace: true });
     } catch {
       // Error toast handled by API interceptor
@@ -55,10 +57,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-display text-xl">R</span>
+            <span className="text-white font-display text-xl">T</span>
           </div>
           <h1 className="text-3xl font-display text-gray-900">Welcome back</h1>
-          <p className="text-gray-500 mt-2">Sign in to Root & Bloom</p>
+          <p className="text-gray-500 mt-2">Sign in to Thottam</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
@@ -105,6 +107,7 @@ export default function LoginPage() {
         <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-700">
           <p className="font-semibold mb-1">Demo Credentials</p>
           <p>Customer: customer@test.com / Customer@123</p>
+          <p>Super admin: superadmin@greenroots.com / Admin@123</p>
           <p>Admin: admin@greenroots.com / Admin@123</p>
         </div>
       </div>

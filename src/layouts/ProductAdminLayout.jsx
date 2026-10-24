@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { isProductManagerRole } from '../utils/helpers';
 import DashboardLayout from '../components/DashboardLayout';
 import {
   ArchiveBoxIcon, CubeIcon, PlusIcon, BuildingStorefrontIcon,
@@ -13,9 +14,9 @@ export default function ProductAdminLayout() {
     { to: '/product-admin',             label: 'Inventory',     icon: ArchiveBoxIcon,         end: true,  section: 'Products' },
     { to: '/product-admin/products',    label: 'All Products',  icon: CubeIcon,                           section: 'Products' },
     { to: '/product-admin/products/new',label: 'Add Product',   icon: PlusIcon,                           section: 'Products' },
-    ...(user?.role !== 'shop_assistant'
-      ? [{ to: '/seller', label: 'Shop Admin', icon: BuildingStorefrontIcon, section: 'Navigation' }]
-      : []),
+    ...(isProductManagerRole(user?.role)
+      ? []
+      : [{ to: '/seller', label: 'Shop Admin', icon: BuildingStorefrontIcon, section: 'Navigation' }]),
   ];
 
   return (

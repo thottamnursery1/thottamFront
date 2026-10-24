@@ -75,6 +75,12 @@ import PlantDetailPage from './pages/plants/PlantDetailPage';
 import PlantFormPage from './pages/plants/PlantFormPage';
 import PlantActivitiesPage from './pages/plants/PlantActivitiesPage';
 import AdminPlants from './pages/admin/AdminPlants';
+import AuctionsPage from './pages/auctions/AuctionsPage';
+import AuctionFormPage from './pages/auctions/AuctionFormPage';
+import AuctionDetailPage from './pages/auctions/AuctionDetailPage';
+import AuctionPayPage from './pages/auctions/AuctionPayPage';
+import AuctionHistoryPage from './pages/auctions/AuctionHistoryPage';
+import AdminAuctions from './pages/admin/AdminAuctions';
 
 export default function App() {
   return (
@@ -103,6 +109,9 @@ export default function App() {
             <Route path="/plants/new" element={<PlantFormPage />} />
             <Route path="/plants/:id/edit" element={<PlantFormPage />} />
             <Route path="/account/plants" element={<PlantActivitiesPage />} />
+            <Route path="/account/auctions" element={<AuctionHistoryPage />} />
+            <Route path="/auctions/new" element={<AuctionFormPage />} />
+            <Route path="/auctions/:id/pay" element={<AuctionPayPage />} />
           </Route>
           <Route path="/nurseries" element={<NurseriesPage />} />
           <Route path="/nurseries/:slug" element={<NurseryDetailPage />} />
@@ -113,6 +122,8 @@ export default function App() {
           <Route path="/community/sellers/:id" element={<CommunitySellerPage />} />
           <Route path="/plants" element={<PlantExchangePage />} />
           <Route path="/plants/:id" element={<PlantDetailPage />} />
+          <Route path="/auctions" element={<AuctionsPage />} />
+          <Route path="/auctions/:id" element={<AuctionDetailPage />} />
           
           {/* Seller Pending Route with MainLayout */}
           <Route element={<SellerRoute allowPending />}>
@@ -177,6 +188,7 @@ export default function App() {
             <Route path="/admin/settlements" element={<AdminSettlements />} />
             <Route path="/admin/community" element={<AdminCommunity />} />
             <Route path="/admin/plants" element={<AdminPlants />} />
+            <Route path="/admin/auctions" element={<AdminAuctions />} />
           </Route>
         </Route>
 

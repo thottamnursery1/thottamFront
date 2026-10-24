@@ -284,4 +284,17 @@ export const plantAPI = {
   audit: () => api.get('/plants/admin/audit'),
 };
 
+export const auctionAPI = {
+  list: (params) => api.get('/auctions', { params }),
+  get: (id) => api.get(`/auctions/${id}`),
+  create: (data) => api.post('/auctions', data),
+  bid: (id, data) => api.post(`/auctions/${id}/bids`, data),
+  checkout: (id) => api.get(`/auctions/${id}/checkout`),
+  pay: (id) => api.post(`/auctions/${id}/pay`),
+  verify: (id, data) => api.post(`/auctions/${id}/verify`, data),
+  mine: () => api.get('/auctions/me/history'),
+  adminPayments: () => api.get('/auctions/admin/payments'),
+  refund: (id, data) => api.post(`/auctions/admin/payments/${id}/refund`, data),
+};
+
 export default api;

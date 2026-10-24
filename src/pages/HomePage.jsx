@@ -171,7 +171,7 @@ export default function HomePage() {
         <div className="flex items-end justify-between mb-6">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Trusted growers</p>
-            <h2 className="text-3xl sm:text-4xl mt-1">Nurseries on Root & Bloom</h2>
+            <h2 className="text-3xl sm:text-4xl mt-1">Nurseries on Thottam</h2>
           </div>
           <Link to="/nurseries" className="text-sm font-semibold text-primary-700">All nurseries</Link>
         </div>

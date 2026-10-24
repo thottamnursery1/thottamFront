@@ -4,6 +4,7 @@ import { userAPI, authAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import ChoiceSelect from '../components/ChoiceSelect';
 
 const STATES = ['Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal'];
 const emptyAddr = { label: 'Home', fullName: '', phone: '', line1: '', line2: '', city: '', state: '', postalCode: '', country: 'India', isDefault: false };
@@ -237,10 +238,12 @@ export default function AccountPage() {
                   ))}
                   <div>
                     <label className="label">State</label>
-                    <select className="input" value={addrForm.state} onChange={(e) => setAddrForm({ ...addrForm, state: e.target.value })} required>
-                      <option value="">Select State</option>
-                      {STATES.map((s) => <option key={s}>{s}</option>)}
-                    </select>
+                    <ChoiceSelect
+                      value={addrForm.state}
+                      placeholder="Select State"
+                      options={STATES}
+                      onChange={(e) => setAddrForm({ ...addrForm, state: e.target.value })}
+                    />
                   </div>
                   <div className="flex gap-3 pt-2">
                     <button type="submit" disabled={addrLoading} className="btn-primary flex-1 py-2 text-sm">
